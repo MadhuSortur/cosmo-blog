@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COSMO Logo</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #0a0f1f; /* Dark navy background */
+    }
+  </style>
+</head>
+<body>
+  <!-- SVG Logo -->
+  <svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <!-- Planet -->
+    <polygon points="200,80 260,120 280,200 240,260 160,260 120,200 140,120" 
+      fill="url(#blueGradient)" />
+    
+    <!-- Orbit -->
+    <ellipse cx="200" cy="200" rx="120" ry="50" stroke="white" stroke-width="3" fill="none" transform="rotate(-15, 200, 200)"/>
+    
+    <!-- Orbit Dots -->
+    <circle cx="80" cy="200" r="8" fill="white"/>
+    <circle cx="290" cy="180" r="10" fill="white"/>
+    
+    <!-- Gradient for the planet -->
+    <defs>
+      <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#00cfff; stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#007bff; stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    
+    <!-- COSMO Text -->
+    <text x="200" y="340" text-anchor="middle" fill="white" font-size="40" font-family="Arial" letter-spacing="8">
+      COSMO
+    </text>
+  </svg>
+</body>
+</html>

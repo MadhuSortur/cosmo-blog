@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile – Cosmo Blog</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --sidebar-dark: #1e293b;
+      --card-dark: #1e293b;
+      --text-light: #ffffff;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --hover: #334155;
+      --edit-card-bg: #f4f6f8; /* light card like screenshot */
+      --input-bg: #ffffff;
+      --input-border: #d7dde3;
+      --muted-dark: #6b7280;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background-color: var(--sidebar-dark);
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1rem;
+    }
+
+    .sidebar h2 {
+      font-size: 1.4rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar h2 img {
+      height: 35px;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: var(--text-light);
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.3s;
+      font-size: 0.95rem;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: var(--hover);
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      background-color: var(--card-dark);
+      border-radius: 15px;
+      padding: 1.5rem;
+      gap: 1.25rem;
+    }
+
+    .profile-pic-wrapper {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #334155;
+      border: 3px solid var(--accent);
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .profile-pic {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .profile-info h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+    .profile-info p {
+      margin: 4px 0;
+      color: var(--text-muted);
+    }
+
+    .edit-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: white;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .card {
+      flex: 1;
+      background-color: var(--card-dark);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .card p {
+      font-size: 1.2rem;
+      margin: 8px 0 0;
+      font-weight: 600;
+    }
+
+    /* ======= EDIT VIEW (full-page card) ======= */
+    .edit-page {
+      display: none; /* shown when editing */
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 18px 0;
+    }
+
+    .edit-card {
+      width: 92%;
+      max-width: 1100px; /* container width */
+      background: var(--edit-card-bg);
+      border-radius: 12px;
+      padding: 26px;
+      color: #111827;
+      box-shadow: 0 6px 24px rgba(2,6,23,0.6);
+    }
+
+    .edit-card h2 {
+      margin: 0 0 14px 0;
+      font-size: 20px;
+      color: #0f172a;
+    }
+
+    .edit-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr; /* left column for avatar, right for fields */
+      gap: 24px;
+    }
+
+    /* Left column */
+    .left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .avatar-large {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      color: #6b7280;
+      overflow: hidden;
+      border: 4px solid rgba(15,23,42,0.06);
+    }
+
+    .avatar-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .upload-row {
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .upload-btn {
+      padding: 8px 12px;
+      background:#eef2ff;
+      border:1px solid #c7d2fe;
+      color:#1e293b;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .remove-btn {
+      padding: 8px 10px;
+      background: #fff1f2;
+      border: 1px solid #fecaca;
+      color: #7f1d1d;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* Right column */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .two-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label.field-label {
+      display: block;
+      font-size: 13px;
+      color: #374151;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    input.field-input, textarea.field-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      font-size: 14px;
+      color: #0f172a;
+    }
+
+    textarea.field-input { min-height: 110px; resize: vertical; }
+
+    .bio-area {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 18px;
+      margin-top: 6px;
+    }
+
+    .social-list { display:flex; flex-direction:column; gap:8px; }
+
+    .social-row { display:flex; gap:8px; align-items:center; }
+    .add-btn {
+      padding:6px 10px;
+      background:#efefef;
+      border-radius:8px;
+      border: 1px solid #e0e0e0;
+      cursor:pointer;
+      font-size:13px;
+    }
+
+    .footer-actions {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top:18px;
+    }
+
+    .delete-account {
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .save-changes {
+      background: #2563eb;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .edit-grid { grid-template-columns: 1fr; }
+      .bio-area { grid-template-columns: 1fr; }
+      .avatar-large { width: 140px; height: 140px; font-size: 56px; }
+      .profile-pic-wrapper { width: 80px; height: 80px; }
+    }
+
+    /* ================= MOBILE RESPONSIVE ================= */
+@media (max-width: 900px) {
+  /* Sidebar becomes top horizontal */
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    overflow-x: auto;
+  }
+
+  .sidebar h2 {
+    width: 100%;
+    justify-content: flex-start;
+    font-size: 1.2rem;
+  }
+
+  .sidebar h2 img {
+    height: 28px;
+  }
+
+  .sidebar a {
+    flex: none;
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap;
+    font-size: 0.85rem;
+  }
+
+  /* Main content */
+  .main {
+    padding: 1rem 0.75rem;
+    flex: 1;
+  }
+
+  /* Profile header stack */
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .profile-info h2 {
+    font-size: 1.1rem;
+  }
+
+  .profile-info p {
+    font-size: 0.85rem;
+  }
+
+  /* Stats stacked */
+  .stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Edit page adjustments */
+  .edit-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .bio-area {
+    grid-template-columns: 1fr !important;
+  }
+
+  .avatar-large {
+    width: 120px;
+    height: 120px;
+    font-size: 48px;
+  }
+
+  .profile-pic-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+
+  .edit-card {
+    padding: 18px;
+  }
+}
+
+
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2><img src="logo.png" alt="">Cosmo Blog</h2>
+    <a href="all-posts.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="blogs.html"><i class="fa-brands fa-blogger-b"></i> Blogs</a>
+    <a href="yourblogs.html"><i class="fa-solid fa-book"></i> My Blog</a>
+    <a href="create-blog.html"><i class="fa-solid fa-pen-to-square"></i> Create Blog</a>
+    <a href="profile.html" class="active"><i class="fa-solid fa-user"></i> Profile</a>
+    <a href="analytics.html" class="active"><i class="fa-solid fa-user"></i> Analytics</a>
+    <a href="about-us.html"><i class="fa-solid fa-circle-info"></i> About</a>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- PROFILE DISPLAY -->
+    <div id="profileView">
+      <div class="profile-header">
+        <div class="profile-pic-wrapper">
+          <img id="displayProfilePic" class="profile-pic" alt="profile">
+          <div id="displayProfileLetter"></div>
+        </div>
+
+        <div class="profile-info">
+          <h2 id="displayName">Welcome!</h2>
+          <p id="displayEmail">Email: user@example.com</p>
+          <p id="displayBio">Loading bio...</p>
+
+            <!-- ⭐ ADDED SOCIAL ICONS -->
+            <div id="socialIcons" style="margin:10px 0; display:flex; gap:14px; font-size:22px;">
+              <a id="facebookView" href="#" target="_blank" style="color:#3b82f6;"><i class="fab fa-facebook"></i></a>
+              <a id="instagramView" href="#" target="_blank" style="color:#3b82f6;"><i class="fab fa-instagram"></i></a>
+              <a id="linkedinView" href="#" target="_blank" style="color:#0a66c2;"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <!-- END SOCIAL ICONS -->
+
+          <div style="margin-top:10px">
+            <button class="edit-btn" onclick="openEdit()">Edit Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats" style="margin-top:16px">
+        <div class="card"><h3>Total Views</h3><p id="views">0</p></div>
+        <div class="card"><h3>Total Blogs</h3><p id="blogs">0</p></div>
+        <div class="card"><h3>Comments</h3><p id="comments">0</p></div>
+        <div class="card"><h3>Likes</h3><p id="likes">0</p></div>
+      </div>
+    </div>
+
+    <!-- EDIT PAGE (full width card) -->
+    <div id="editPage" class="edit-page" aria-hidden="true">
+      <div class="edit-card">
+        <h2>Edit Profile</h2>
+
+        <div class="edit-grid">
+          <!-- LEFT -->
+          <div class="left-col">
+            <div class="avatar-large" id="avatarLarge">
+              <img id="avatarImg" alt="avatar">
+              <span id="avatarLetter"></span>
+            </div>
+
+            <div class="upload-row">
+              <label class="upload-btn" for="fileInput">Upload Photo</label>
+              <input id="fileInput" name="profile_pic" type="file" accept="image/*" style="display:none">
+              <button id="removePhoto" class="remove-btn" type="button">Remove</button>
+            </div>
+
+            <div style="font-size:13px;color:#6b7280;margin-top:6px;text-align:center;">
+              Recommended: 400x400, JPG/PNG
+            </div>
+          </div>
+ 
+          <!-- RIGHT -->
+          <div class="right-col">
+            <div class="single-cols">
+              <label class="field-label">Username</label>
+              <input id="usernameInput" class="field-input" placeholder="Enter username">
+
+              <div>
+                <label class="field-label">Email</label>
+                <input id="email" class="field-input" type="email" disabled>
+              </div>
+              
+            </div>
+
+            <div class="bio-area">
+              <div>
+                <label class="field-label">Bio</label>
+                <textarea id="description" class="field-input" maxlength="500" placeholder="Tell something about yourself..."></textarea>
+                <div style="text-align:right;font-size:12px;color:#6b7280;margin-top:6px;" id="bioCount">0/500</div>
+              </div>
+
+              <div>
+                <label class="field-label">Social Links</label>
+                <div class="social-list">
+                  <div class="social-row">
+                    <input id="facebook_link" class="field-input" placeholder="Facebook URL">
+                  </div>
+                  <div class="social-row">
+                    <input id="instagram_link" class="field-input" placeholder="Instagram URL">
+                  </div>
+                  <div class="social-row">
+                    <input id="linkedin_link" class="field-input" placeholder="LinkedIn URL">
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="footer-actions">
+              <div style="display:flex;gap:10px">
+                <button class="save-changes" id="saveBtn">Save Changes</button>
+                <button class="save-changes" id="cancelEdit" style="background:#9ca3af">Cancel</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- main end -->
+
+<script>
+const API_BASE = "http://localhost:5000";
+const token = localStorage.getItem("token");
+
+
+// Elements
+const profileView = document.getElementById("profileView");
+const editPage = document.getElementById("editPage");
+
+const displayProfilePic = document.getElementById("displayProfilePic");
+const displayProfileLetter = document.getElementById("displayProfileLetter");
+
+const avatarImg = document.getElementById("avatarImg");
+const avatarLetter = document.getElementById("avatarLetter");
+
+const fileInput = document.getElementById("fileInput");
+const removePhoto = document.getElementById("removePhoto");
+const bioCount = document.getElementById("bioCount");
+
+const displayName = document.getElementById("displayName");
+const displayEmail = document.getElementById("displayEmail");
+const displayBio = document.getElementById("displayBio");
+
+const usernameInput = document.getElementById("usernameInput");
+const emailInput = document.getElementById("email");
+const descriptionInput = document.getElementById("description");
+
+const facebookInput = document.getElementById("facebook_link");
+const instagramInput = document.getElementById("instagram_link");
+const linkedinInput = document.getElementById("linkedin_link");
+
+const saveBtn = document.getElementById("saveBtn");
+const cancelEdit = document.getElementById("cancelEdit");
+
+let currentProfile = null;
+let uploadedFile = null;
+let removedPhoto = false;
+
+/* ----------------------------------------------------
+                OPEN / CLOSE EDIT PAGE
+---------------------------------------------------- */
+function openEdit() {
+  profileView.style.display = "none";
+  editPage.style.display = "flex";
+  bioCount.textContent = `${descriptionInput.value.length}/500`;
+}
+
+function closeEdit() {
+  editPage.style.display = "none";
+  profileView.style.display = "block";
+  uploadedFile = null;
+  removedPhoto = false;
+  fileInput.value = "";
+}
+
+cancelEdit.addEventListener("click", () => {
+  populateForm(currentProfile);
+  closeEdit();
+});
+
+/* ----------------------------------------------------
+                FILE UPLOAD
+---------------------------------------------------- */
+fileInput.addEventListener("change", (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  uploadedFile = file;
+  removedPhoto = false;
+
+  const url = URL.createObjectURL(file);
+  avatarImg.src = url;
+  avatarImg.style.display = "block";
+  avatarLetter.style.display = "none";
+});
+
+removePhoto.addEventListener("click", () => {
+  uploadedFile = null;
+  removedPhoto = true;
+  avatarImg.src = "";
+  avatarImg.style.display = "none";
+
+  const letter = (usernameInput.value || currentProfile?.username || "U")[0].toUpperCase();
+  avatarLetter.textContent = letter;
+  avatarLetter.style.display = "block";
+});
+
+/* ----------------------------------------------------
+               BIO COUNTER
+---------------------------------------------------- */
+descriptionInput.addEventListener("input", () => {
+  bioCount.textContent = `${descriptionInput.value.length}/500`;
+});
+
+/* ----------------------------------------------------
+               SAVE PROFILE
+---------------------------------------------------- */
+saveBtn.addEventListener("click", async () => {
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saving...";
+
+  const formData = new FormData();
+  formData.append("username", usernameInput.value);
+  formData.append("bio", descriptionInput.value);
+
+  formData.append("facebook_link", facebookInput.value);
+  formData.append("instagram_link", instagramInput.value);
+  formData.append("linkedin_link", linkedinInput.value);
+
+  if (uploadedFile) formData.append("profile_pic", uploadedFile);
+  if (removedPhoto) formData.append("remove_profile_pic", "1");
+
+  try {
+    const res = await fetch(`${API_BASE}/api/update-profile`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+    await loadProfile();
+    closeEdit();
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save profile.");
+  }
+
+  saveBtn.disabled = false;
+  saveBtn.textContent = "Save Changes";
+});
+
+/* ----------------------------------------------------
+                POPULATE FORM
+---------------------------------------------------- */
+function populateForm(data) {
+  currentProfile = data;
+
+  usernameInput.value = data.username || "";
+  emailInput.value = data.email || "";
+  descriptionInput.value = data.bio || "";
+  bioCount.textContent = `${descriptionInput.value.length}/500`;
+
+  displayName.textContent = data.username || "Welcome!";
+  displayEmail.textContent = `Email: ${data.email}`;
+  displayBio.textContent = data.bio || "No bio available.";
+
+  facebookInput.value = data.facebook_link || "";
+  instagramInput.value = data.instagram_link || "";
+  linkedinInput.value = data.linkedin_link || "";
+
+  // -------- Profile picture --------
+  if (data.profile_pic) {
+    displayProfilePic.src = data.profile_pic;
+    displayProfilePic.style.display = "block";
+    displayProfileLetter.style.display = "none";
+
+    avatarImg.src = data.profile_pic;
+    avatarImg.style.display = "block";
+    avatarLetter.style.display = "none";
+
+  } else {
+    displayProfilePic.style.display = "none";
+    const letter = data.username ? data.username[0].toUpperCase() : "U";
+    displayProfileLetter.textContent = letter;
+    displayProfileLetter.style.display = "block";
+
+    avatarImg.style.display = "none";
+    avatarLetter.textContent = letter;
+    avatarLetter.style.display = "block";
+  }
+
+  // Update social icon links
+  updateSocialIcons(data);
+}
+
+/* ----------------------------------------------------
+                 UPDATE SOCIAL ICONS
+---------------------------------------------------- */
+function updateSocialIcons(data) {
+  const fb = document.getElementById("facebookView");
+  const ig = document.getElementById("instagramView");
+  const ln = document.getElementById("linkedinView");
+
+  fb.href = data.facebook_link || "#";
+  ig.href = data.instagram_link || "#";
+  ln.href = data.linkedin_link || "#";
+
+  fb.style.display = data.facebook_link ? "block" : "none";
+  ig.style.display = data.instagram_link ? "block" : "none";
+  ln.style.display = data.linkedin_link ? "block" : "none";
+}
+
+/* ----------------------------------------------------
+                 LOAD PROFILE
+---------------------------------------------------- */
+async function loadProfile() {
+  try {
+    const res = await fetch(`${API_BASE}/api/profile`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+
+    // Fill profile fields
+    populateForm(data.user);
+
+    // ⭐ SET STATS IN THE BOXES
+    document.getElementById("views").textContent = data.stats.totalViews || 0;
+    document.getElementById("blogs").textContent = data.stats.totalPosts || 0;
+    document.getElementById("comments").textContent = data.stats.totalComments || 0;
+    document.getElementById("likes").textContent = data.stats.totalLikes || 0;
+
+  } catch (err) {
+    console.error("Failed to fetch profile:", err);
+  }
+}
+
+loadProfile();
+</script>
+
+</body>
+</html>

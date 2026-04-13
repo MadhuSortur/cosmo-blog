@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmo Blog | Welcome</title>
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.88/build/spline-viewer.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+      background: #000;
+      transition: opacity 1s ease;
+      opacity: 1;
+      cursor: pointer;
+    }
+
+    .container.fade-out {
+      opacity: 0;
+    }
+
+    spline-viewer {
+      flex: 1;
+      height: 100%;
+      width: 50%;
+      filter: brightness(1.1) contrast(1.2);
+      background: #000;
+      transition: all 0.3s ease;
+    }
+
+    .robot-scene {
+      order: 1; /* Left side */
+    }
+
+    .text-scene {
+      order: 2; /* Right side */
+    }
+
+    .divider {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background: #111;
+      z-index: 2;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      spline-viewer {
+        width: 100%;
+        height: 50%;
+      }
+      .divider {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="welcomeContainer">
+    <!-- Left: Robot Scene -->
+    <spline-viewer
+      class="robot-scene"
+      url="https://prod.spline.design/2Uh3ilAScDObP553/scene.splinecode">
+    </spline-viewer>
+
+    <!-- Right: Text Scene -->
+    <spline-viewer
+      class="text-scene"
+      url="https://prod.spline.design/LgCO7Z30XP86Sijt/scene.splinecode">
+    </spline-viewer>
+
+    <div class="divider"></div>
+  </div>
+
+  <script>
+    const container = document.getElementById('welcomeContainer');
+
+    container.addEventListener('click', () => {
+      container.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'all-posts.html';
+      }, 1000); // matches the CSS transition time
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!-- CREATE CHANNEL PAGE -->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Channel - Dominic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-bg: #fcfcfc;
+            --accent-color: #000;
+            --light-text: #666;
+            --border-color: #eee;
+            --white: #ffffff;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--primary-bg);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 260px;
+            background: var(--white);
+            border-right: 1px solid var(--border-color);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 50px;
+            font-size: 0.9rem;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            color: var(--light-text);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .nav-item.active {
+            background: #f0f0f0;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            flex: 1;
+            padding: 60px;
+            overflow-y: auto;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            color: var(--light-text);
+            margin-bottom: 40px;
+        }
+
+        /* --- Profile Upload Area --- */
+        .upload-section {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-preview {
+            width: 100px;
+            height: 100px;
+            background: #f0f0f0;
+            border-radius: 50%; /* Circle shape as requested before */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ccc;
+            overflow: hidden;
+        }
+
+        .upload-btn {
+            background: var(--accent-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* --- Input Styling --- */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            background: #fff;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent-color);
+        }
+
+        .btn-create {
+            width: 100%;
+            padding: 18px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .btn-create:hover {
+            transform: scale(1.02);
+        }
+
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">Dominic.</div>
+        <a href="#" class="nav-item">Dashboard</a>
+        <a href="#" class="nav-item active">Create Channel</a>
+        <a href="#" class="nav-item">My Analytics</a>
+        <a href="#" class="nav-item">Settings</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="form-container">
+            <h1>Create Channel</h1>
+            <p class="subtitle">Set up your digital identity and start sharing your work.</p>
+
+            <div class="upload-section">
+                <div class="profile-preview">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <div>
+                    <button class="upload-btn">Upload Photo</button>
+                    <p style="font-size: 0.75rem; color: #999; margin-top: 8px;">Recommended: 800x800px JPG or PNG</p>
+                </div>
+            </div>
+
+            <form>
+                <div class="form-group">
+                    <label>Channel Name</label>
+                    <input type="text" placeholder="e.g. Dominic Design Studio">
+                </div>
+
+                <div class="form-group">
+                    <label>Handle</label>
+                    <input type="text" placeholder="@dominic_ui">
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea rows="4" placeholder="Tell the world what your channel is about..."></textarea>
+                </div>
+
+                <button type="button" class="btn-create">Create My Channel</button>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

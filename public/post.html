@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cosmo Blog – Post</title>
+<link rel="icon" href="logo.png" type="image/png" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.5/purify.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+body { font-family: "Poppins", sans-serif; background-color: #0f172a; color: #e2e8f0; }
+.sidebar { width: 250px; background-color: #1e293b; height: 100vh; position: fixed; top: 0; left: 0; display:flex; flex-direction:column; padding:1.5rem; gap:1.5rem; }
+.sidebar a { color: #e2e8f0; text-decoration:none; display:flex; align-items:center; gap:10px; font-weight:500; transition:0.3s; }
+.sidebar a:hover { color: #38bdf8; }
+.main-content { margin-left:260px; padding:2rem; }
+.post-container { background-color:#1e293b; border-radius:12px; padding:2rem; box-shadow:0 4px 20px rgba(0,0,0,0.4); max-width:900px; margin:0 auto; }
+.btn-ghost { background:transparent; border:1px solid rgba(255,255,255,0.06); padding:.5rem 1rem; border-radius:.5rem; cursor:pointer; }
+.loader { border:4px solid #1e293b; border-top:4px solid #38bdf8; border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite; margin:2rem auto; }
+@keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+.like-active { color: #ef4444; transform: scale(1.05); }
+.comment-card { background: rgba(14, 23, 36, 0.6); border:1px solid rgba(255,255,255,0.03); padding: .6rem; border-radius:.5rem; }
+.fade-in { animation: fadeIn .18s ease-out; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform: translateY(0);} }
+
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    flex-direction: column; /* stack vertically */
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+
+  .sidebar .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .sidebar .logo img {
+    width: 30px;   /* fixed size for mobile */
+    height: 30px;  /* fixed size for mobile */
+    object-fit: contain;
+  }
+
+  .sidebar a {
+    flex: none; /* no shrinking */
+    justify-content: flex-start; /* left-align */
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+}
+
+
+
+/* Mobile */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1.2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .post-container {
+    padding: 1.25rem;
+    border-radius: 10px;
+  }
+
+  .post-container h1 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  iframe,
+  video,
+  img {
+    height: 220px !important;
+  }
+
+  textarea {
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 640px) {
+  .post-container .flex {
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  #likeBtn,
+  #shareBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo flex items-center gap-2 font-bold text-white">
+    <img src="logo.png" alt="Logo" style="width:30px;height:30px" /> Cosmo Blog
+  </div>
+  <a href="all-posts.html"><i class="fa-solid fa-house"></i> Home</a>
+  <a href="blogs.html"><i class="fa-brands fa-blogger-b"></i> Blogs</a>
+  <a href="yourblogs.html"><i class="fa-solid fa-book"></i> My Blog</a>
+  <a href="create-blog.html"><i class="fa-solid fa-pen-to-square"></i> Create Blog</a>
+  <a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+  <a href="about-us.html"><i class="fa-solid fa-circle-info"></i> About</a>
+</div>
+
+<div class="main-content">
+  <div id="post-container" class="post-container">
+    <div class="loader"></div>
+    <p class="text-center text-slate-400 mt-2">Loading post...</p>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'http://localhost:5000/api';
+const token = localStorage.getItem('token');
+const fallbackPostImage = 'no-image.png';
+
+function escapeHtml(str){
+  if(!str) return '';
+  return str.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+            .replaceAll('"','&quot;').replaceAll("'",'&#039;');
+}
+
+async function loadPost(){
+  const postContainer = document.getElementById("post-container");
+  const postId = new URLSearchParams(window.location.search).get("id");
+  if(!postId){ postContainer.innerHTML='<p class="text-center text-red-400">Post ID not found.</p>'; return; }
+
+  try{
+    const postResp = await fetch(`${API_BASE}/posts/${postId}`);
+    if(!postResp.ok) throw new Error('Post not found');
+    const post = await postResp.json();
+
+// ✅ Record the view (if user is logged in)
+if(postId && token){
+  try {
+    await fetch(`${API_BASE}/posts/${postId}/view`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    console.log("View recorded for post", postId);
+  } catch (err) {
+    console.error("Failed to record view:", err);
+  }
+}
+
+    const likesResp = await fetch(`${API_BASE}/posts/${postId}/likes`, { headers: token?{Authorization:`Bearer ${token}`}:{} });
+    const likesData = await likesResp.json();
+    const likesCount = likesData.count || 0;
+    const likedByUser = token ? likesData.users.includes(parseInt(localStorage.getItem('userId'))) : false;
+
+    const commentsResp = await fetch(`${API_BASE}/posts/${postId}/comments`, { headers: token?{Authorization:`Bearer ${token}`}:{} });
+    const comments = await commentsResp.json();
+
+    // Media handling
+    let mediaHTML = '';
+    if(post.video && post.video.trim()!==''){
+      const v = post.video.trim();
+      if(v.includes('youtube.com')||v.includes('youtu.be')){
+        const videoId = v.split('v=')[1]?.split('&')[0] || v.split('/').pop();
+        mediaHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen class="w-full h-80 rounded-lg mb-5"></iframe>`;
+      } else if(/\.(mp4|webm|ogg|mov|avi)$/i.test(v)){
+        mediaHTML = `<video src="${v}" controls class="w-full h-80 rounded-lg mb-5 object-cover"></video>`;
+      }
+    }
+    if(!mediaHTML) mediaHTML = `<img src="${post.image||fallbackPostImage}" alt="post image" class="w-full h-80 object-cover rounded-lg mb-5" />`;
+
+    // Comments HTML
+    const commentsHTML = comments.map(c=>`
+      <div class="comment-card mb-3 fade-in" data-comment-id="${c.id}">
+        <div class="flex justify-start gap-3">
+          <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+            ${escapeHtml(c.user_name.charAt(0).toUpperCase())}
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-center">
+              <div class="text-sm text-slate-300 font-medium">${escapeHtml(c.user_name)}</div>
+              <div class="text-xs text-slate-400">${new Date(c.created_at).toLocaleString()}</div>
+            </div>
+            <div class="mt-1 text-slate-200 comment-content">${escapeHtml(c.content)}</div>
+            ${token ? `
+            <div class="flex gap-2 mt-1">
+              <button class="btn-ghost text-xs edit-comment-btn" data-id="${c.id}">Edit</button>
+              <button class="btn-ghost text-xs delete-comment-btn" data-id="${c.id}">Delete</button>
+            </div>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('') || '<p class="text-slate-400">No comments yet — be the first!</p>';
+
+    // Main container
+    postContainer.innerHTML = `
+      <div class="max-w-4xl mx-auto mt-4 p-4">
+        ${mediaHTML}
+        <h1 class="text-3xl font-bold mb-2">${escapeHtml(post.title)}</h1>
+        <p class="text-gray-400 mb-2">
+          <i class="fa-regular fa-user"></i> ${escapeHtml(post.username)} &nbsp;|&nbsp; 
+          <i class="fa-regular fa-clock"></i> ${new Date(post.created_at).toLocaleDateString()}
+        </p>
+
+        <div id="postContent" class="text-gray-200 leading-relaxed mb-6"></div>
+
+        <div class="flex items-center gap-3 mb-6">
+          ${token ? `<button id="likeBtn" class="flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-150 ${likedByUser?'like-active bg-blue-600':'bg-blue-600'}">
+            <i class="fa-solid fa-heart"></i> <span id="likeCount">${likesCount}</span>
+          </button>` : ''}
+          <button id="shareBtn" class="flex items-center gap-2 px-3 py-2 rounded-md bg-green-600 hover:bg-green-500">
+            <i class="fa-solid fa-share"></i> Share
+          </button>
+          <div class="ml-auto text-sm text-slate-400">Post ID: ${postId}</div>
+        </div>
+
+        ${token ? `
+        <div class="mb-4">
+          <label class="block text-sm font-semibold mb-2">Add a comment</label>
+          <textarea id="commentInput" rows="3" class="w-full p-2 rounded-md bg-slate-800" placeholder="Write your comment..."></textarea>
+
+
+      <div class="flex gap-2 mt-2">
+        <button id="addCommentBtn" class="bg-purple-600 px-4 py-2 rounded-md hover:bg-purple-500">Post Comment</button>
+      </div>
+    </div>` : ''}
+
+    <h2 class="text-xl font-semibold mb-3">Comments</h2>
+    <div id="commentsBox">${commentsHTML}</div>
+  </div>
+`;
+
+// Inject post description safely as HTML (no extra <p>)
+document.getElementById('postContent').innerHTML = DOMPurify.sanitize(post.description || '');
+
+// Likes
+if(token){
+  document.getElementById('likeBtn').addEventListener('click', async ()=>{
+    try{
+      const res = await fetch(`${API_BASE}/posts/${postId}/like`, { method:'POST', headers:{Authorization:`Bearer ${token}`}});
+      const data = await res.json();
+      document.getElementById('likeCount').textContent = data.likes_count;
+      if(data.liked_by_user) document.getElementById('likeBtn').classList.add('like-active');
+      else document.getElementById('likeBtn').classList.remove('like-active');
+    }catch(e){console.error(e);}
+  });
+
+  // Add comment
+  document.getElementById('addCommentBtn').addEventListener('click', async ()=>{
+    const content = document.getElementById('commentInput').value.trim();
+    if(!content) return alert('Comment cannot be empty');
+    try{
+      await fetch(`${API_BASE}/posts/${postId}/comments`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+        body:JSON.stringify({content})
+      });
+      loadPost();
+      document.getElementById('commentInput').value='';
+    }catch(e){console.error(e);}
+  });
+
+  // Edit/Delete comments
+  document.getElementById('commentsBox').addEventListener('click', async (ev)=>{
+    const editBtn = ev.target.closest('.edit-comment-btn');
+    const delBtn = ev.target.closest('.delete-comment-btn');
+    if(editBtn){
+      const id = editBtn.dataset.id;
+      const newText = prompt("Edit your comment:");
+      if(!newText) return;
+      await fetch(`${API_BASE}/posts/${postId}/comments/${id}`, {
+        method:'PUT',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+        body:JSON.stringify({content:newText})
+      });
+      loadPost();
+    }
+    if(delBtn){
+      const id = delBtn.dataset.id;
+      if(confirm('Delete this comment?')) {
+        await fetch(`${API_BASE}/posts/${postId}/comments/${id}`, {
+          method:'DELETE',
+          headers:{Authorization:`Bearer ${token}`}
+        });
+        loadPost();
+      }
+    }
+  });
+}
+
+// Share button
+document.getElementById('shareBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const url = window.location.href;
+  const existing = document.getElementById('shareMenu');
+  if(existing){ existing.remove(); return; }
+
+  const shareMenu = document.createElement('div');
+  shareMenu.id = 'shareMenu';
+  shareMenu.className = 'absolute bg-gray-100 text-gray-800 border border-gray-300 shadow-lg p-2 rounded-lg flex flex-col gap-2 z-50';
+  shareMenu.style.top = (e.target.getBoundingClientRect().bottom + window.scrollY + 5) + 'px';
+  shareMenu.style.left = (e.target.getBoundingClientRect().left + window.scrollX) + 'px';
+  shareMenu.innerHTML = `
+    <button class="px-3 py-1 hover:bg-gray-200 rounded transition" onclick="navigator.clipboard.writeText('${url}'); alert('Link copied!'); shareMenu.remove();">Copy Link</button>
+    <a href="https://wa.me/?text=${encodeURIComponent(url)}" target="_blank" class="px-3 py-1 hover:bg-gray-200 rounded transition">WhatsApp</a>
+    <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}" target="_blank" class="px-3 py-1 hover:bg-gray-200 rounded transition">Twitter</a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" class="px-3 py-1 hover:bg-gray-200 rounded transition">Facebook</a>
+  `;
+  document.body.appendChild(shareMenu);
+
+  document.addEventListener('click', function handler(ev){
+    if(!shareMenu.contains(ev.target) && ev.target.id !== 'shareBtn'){
+      shareMenu.remove();
+      document.removeEventListener('click', handler);
+    }
+  });
+});
+
+
+}catch(e){
+console.error(e);
+postContainer.innerHTML='<p class="text-center text-red-400">Failed to load post.</p>';
+}
+}
+
+loadPost(); </script>
+
+</body>
+</html>

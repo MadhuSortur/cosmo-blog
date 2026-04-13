@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominic - UI/UX & Brand Designer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* CSS Start */
+        
+        /* Basic Reset and Variables */
+        :root {
+            --dark-text: #333;
+            --light-text: #666;
+            --primary-bg: #f8f8f8; 
+            --white-bg: #fff;
+            --accent-color: #000; 
+            --font-family-primary: 'Arial', sans-serif; 
+            --font-family-secondary: 'Georgia', serif; 
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            color: var(--dark-text);
+            line-height: 1.6;
+            background-color: var(--primary-bg);
+        }
+
+        /* Global Containers for consistent padding */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 1. Top Bar / Logo */
+        .top-bar {
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .top-bar .logo-name {
+            font-size: 0.9em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: var(--dark-text);
+            text-transform: uppercase;
+        }
+        
+        .top-bar .logo-name::before {
+            content: '\2022'; 
+            color: var(--accent-color);
+            margin-right: 8px;
+            font-size: 1.2em;
+            vertical-align: middle;
+            line-height: 0;
+        }
+
+        /* 2. Hero Section */
+        .hero-section {
+            display: flex;
+            align-items: center;
+            padding: 60px 0;
+            position: relative;
+            background-color: var(--white-bg); 
+            overflow: hidden; 
+            border-bottom-left-radius: 50px; 
+        }
+        
+        .hero-content {
+            flex: 1;
+            padding-left: 50px;
+            z-index: 1; 
+        }
+
+        .hero-content .greeting {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .hero-content h1 {
+            font-size: 4em;
+            line-height: 1.0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .hero-content h1 span {
+            display: block;
+            font-size: 0.7em; 
+            font-family: var(--font-family-secondary);
+            font-weight: normal;
+            text-transform: none;
+            font-style: italic; 
+            margin-top: -10px;
+            line-height: 1.0;
+        }
+        
+        .hero-content h1 span:first-line {
+            line-height: 0.8; 
+        }
+
+
+        .hero-content .description {
+            max-width: 450px;
+            font-size: 1.1em;
+            color: var(--light-text);
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            background-color: var(--accent-color);
+            color: var(--white-bg);
+            padding: 15px 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: #555;
+        }
+        
+        .cta-button i {
+            font-size: 1.2em;
+        }
+
+        .hero-image-container {
+            flex: 1;
+            height: 650px; 
+            background-color: var(--primary-bg); 
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; 
+            border-top-right-radius: 50px; 
+            border-bottom-left-radius: 200px; 
+        }
+        
+        .hero-image-container img {
+            width: 100%; 
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            border-top-right-radius: 50px;
+            border-bottom-left-radius: 200px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+        }
+
+
+        /* 3. Value Propositions (Scrollable Section) */
+        .value-propositions {
+            padding: 80px 0;
+            overflow-x: auto; 
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        .propositions-wrapper {
+            display: flex;
+            gap: 40px; 
+            min-width: fit-content; 
+            padding-left: 20px; 
+            padding-right: 20px;
+        }
+
+        .prop-card {
+            flex-shrink: 0; 
+            width: 300px; 
+            padding: 20px 0;
+            text-align: left;
+        }
+
+        .prop-card h3 {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .prop-card p {
+            font-size: 0.9em;
+            color: var(--light-text);
+        }
+        
+        /* 4. Trusted By Section */
+        .trusted-by {
+            background-color: var(--white-bg);
+            padding: 80px 0;
+            border-top-right-radius: 50px; 
+        }
+
+        .trusted-by-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end; 
+            margin-bottom: 40px;
+        }
+
+        .trusted-by-header h2 {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .trusted-by-header p {
+            max-width: 400px;
+            font-size: 0.9em;
+            color: var(--light-text);
+            text-align: right;
+        }
+
+        .partner-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px; 
+            border-top: 1px solid #eee;
+            border-left: 1px solid #eee;
+        }
+
+        .partner-logo-cell {
+            padding: 30px 20px;
+            background-color: var(--white-bg);
+            border-right: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--light-text);
+        }
+        
+        .partner-logo-cell i {
+            color: var(--accent-color);
+            font-size: 0.9em;
+        }
+        
+        /* Responsive adjustments (included for completeness) */
+        @media (max-width: 900px) {
+            .hero-section {
+                flex-direction: column;
+                padding: 40px 0;
+                border-bottom-left-radius: 20px;
+            }
+            .hero-content {
+                padding: 0 20px;
+                text-align: center;
+                margin-bottom: 40px;
+            }
+            .hero-content h1 {
+                font-size: 3em;
+            }
+            .hero-content h1 span {
+                font-size: 0.6em;
+            }
+            .hero-content .description {
+                max-width: 100%;
+            }
+            .hero-image-container {
+                height: 450px;
+                width: 100%;
+                border-top-right-radius: 20px;
+                border-bottom-left-radius: 100px;
+                margin-top: 30px;
+            }
+            .hero-image-container img {
+                border-top-right-radius: 20px;
+                border-bottom-left-radius: 100px;
+            }
+            .trusted-by-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+                margin-bottom: 30px;
+            }
+            .partner-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .hero-content h1 {
+                font-size: 2.5em;
+            }
+            .partner-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Hide scrollbar for the horizontal section (optional) */
+        .value-propositions::-webkit-scrollbar {
+            display: none;
+        }
+        .value-propositions {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* CSS End */
+    </style>
+</head>
+<body>
+
+    <div class="container top-bar">
+        <div class="logo-name">Dominic</div>
+    </div>
+
+    <section class="hero-section">
+        <div class="container hero-content">
+            <p class="greeting">Hey. I'm Solt,</p>
+            <h1>
+                A UI/UX <br>
+                <span>& Brand</span> <br>
+                DESIGNER
+            </h1>
+            <p class="description">
+                Transforming ideas into stunning visuals – UI/UX and brand design <br>
+                that captivates, engages, and delivers results.
+            </p>
+            <button class="cta-button">
+                CONTACT ME <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <div class="hero-image-container">
+            <img src="https://www.gousa.study/images/masters-in-ui-ux-interaction-design-usa.jpg" alt="Professional Man Designer Portrait">
+        </div>
+        </section>
+
+    <section class="value-propositions">
+        <div class="propositions-wrapper container">
+            <div class="prop-card">
+                <h3>USER-CENTERED DESIGN</h3>
+                <p>Intuitive and engaging experiences tailored for your audience.</p>
+            </div>
+            <div class="prop-card">
+                <h3>BRAND IDENTITY & STRATEGY</h3>
+                <p>Strong visual storytelling that makes your brand unforgettable.</p>
+            </div>
+            <div class="prop-card">
+                <h3>RESPONSIVE & MODERN UI</h3>
+                <p>Pixel-perfect designs optimized for all devices.</p>
+            </div>
+            <div class="prop-card">
+                <h3>SEAMLESS PROTOTYPES</h3>
+                <p>Interactive mockups to guide efficient development.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="trusted-by">
+        <div class="container">
+            <div class="trusted-by-header">
+                <h2>TRUSTED BY</h2>
+                <p>Join 1,000 companies already building their websites with Framer</p>
+            </div>
+            <div class="partner-grid">
+                <div class="partner-logo-cell"><i class="far fa-circle"></i> Frame Blox</div>
+                <div class="partner-logo-cell"><i class="far fa-circle"></i> Supa Blox</div>
+                <div class="partner-logo-cell"><i class="fas fa-flask"></i> Hype Blox</div>
+                <div class="partner-logo-cell"><i class="far fa-circle"></i> Ultra Blox</div>
+                <div class="partner-logo-cell"><i class="fas fa-rocket"></i> Ship Blox</div>
+                <div class="partner-logo-cell"><i class="far fa-circle"></i> Frame Blox</div>
+                <div class="partner-logo-cell"><i class="far fa-circle"></i> Ultra Blox</div>
+                <div class="partner-logo-cell"><i class="fas fa-shield-alt"></i> Shift Blox</div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

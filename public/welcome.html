@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome to Cosmo Blog</title>
+  
+  <!-- Favicon -->
+   
+  <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+  <link rel="shortcut icon" href="logo.png" type="image/png">
+ 
+
+
+  <!-- SEO --> 
+  <meta name="description" content="Cosmo Blog - Unleash your thoughts, share your stories, and inspire the world.">
+  <meta name="keywords" content="Blog, Writing, Stories, Cosmo Blog">
+  <meta name="author" content="Cosmo Blog">
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <style>
+    :root {
+      --primary: #2196f3;
+      --glow-color: #90caf9;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Fullscreen intro image */
+    .intro-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('background.webp'); /* ✅ Replace with optimized/compressed image */
+      background-size: cover;
+      background-position: center;
+      background-color: #141e30; /* ✅ Fallback color */
+      z-index: 1000;
+      transition: opacity 1s ease;
+    }
+
+    .intro-image.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .welcome-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to right, #141e30, #243b55);
+      color: white;
+      opacity: 0;
+      transition: opacity 1s ease;
+      flex-direction: column;
+      text-align: center;
+      padding: 0 15px;
+    }
+
+    .welcome-container.visible {
+      opacity: 1;
+    }
+
+    .welcome-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      color: var(--glow-color);
+      animation: glowIcon 2s infinite alternate ease-in-out;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      animation: slideDown 1s ease forwards;
+      opacity: 0;
+    }
+
+    p {
+      font-size: 1.3rem;
+      margin-bottom: 30px;
+      opacity: 0;
+      animation: fadeInText 2s 1s forwards;
+    }
+
+    .login-btn {
+      padding: 12px 28px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--primary);
+      color: white;
+      cursor: pointer;
+      animation: fadeInText 2s 1.5s forwards;
+      opacity: 0;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .login-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px var(--glow-color);
+      background-color: #1976d2;
+    }
+
+    @keyframes slideDown {
+      0% { transform: translateY(-50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeInText {
+      to { opacity: 1; }
+    }
+
+    @keyframes glowIcon {
+      from {
+        text-shadow: 0 0 10px rgba(144, 202, 249, 0.4),
+                     0 0 20px rgba(144, 202, 249, 0.4);
+      }
+      to {
+        text-shadow: 0 0 20px rgba(144, 202, 249, 0.9),
+                     0 0 40px rgba(144, 202, 249, 0.8);
+      }
+    }
+
+    /* ✅ Mobile optimization */
+    @media (max-width: 480px) {
+      h1 { font-size: 2rem; }
+      p { font-size: 1rem; }
+      .welcome-icon { font-size: 45px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fullscreen Intro Image -->
+  <div class="intro-image" id="introImage"></div>
+
+  <!-- Welcome Content -->
+  <div class="welcome-container" id="welcomeContent">
+    <i class="fas fa-pen-fancy welcome-icon" aria-hidden="true"></i>
+    <h1>Welcome to Cosmo Blog</h1>
+    <p>Unleash your thoughts, share your stories, and inspire the world.</p>
+    <a href="login.html" class="login-btn">Login</a>
+  </div>
+
+  <script>
+    window.addEventListener("load", () => {
+      const intro = document.getElementById("introImage");
+      const welcome = document.getElementById("welcomeContent");
+
+      setTimeout(() => {
+        intro.classList.add("fade-out");
+        welcome.classList.add("visible");
+      }, 2000); // 2 seconds
+    });
+  </script>
+</body>
+</html>

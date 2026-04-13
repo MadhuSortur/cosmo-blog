@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>About Us – Cosmo Blog</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; scroll-behavior: smooth; }
+body {
+  font-family: "Poppins", sans-serif;
+  background: #fff;
+  color: #222;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; height: auto; }
+
+.container { width: min(1200px, 92%); margin: 0 auto; }
+.section { padding: 80px 0; }
+
+/* ---------------- HERO ---------------- */
+.hero {
+  position: relative;
+  height: 68vh;
+  min-height: 420px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+.hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  transform-origin: center center;
+  transition: none;
+  z-index: 1;
+}
+.hero .inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.glass-box {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 30px 40px;
+  display: inline-block;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.glass-box h1, .glass-box p {
+  color: #111;
+  margin: 0;
+}
+
+/* ---------------- SPLIT SECTIONS ---------------- */
+.split { display: flex; gap: 40px; align-items: center; flex-wrap: wrap; }
+.col { flex: 1; min-width: 280px; }
+.text h2 { font-size: 2.2rem; margin-bottom: 15px; color: #111; text-align: center; }
+.text p { color: #444; margin-bottom: 12px; text-align: justify; }
+.img-card { position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 18px 40px rgba(0,0,0,0.12); }
+.img-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.25)); pointer-events: none; }
+.img-card img { transition: transform 0.5s ease; }
+.img-card img:hover { transform: scale(1.05); }
+
+/* Reveal animations */
+.reveal { opacity: 0; transform: translateY(40px); transition: all 1s ease; }
+.reveal.show { opacity: 1; transform: translateY(0); }
+
+/* Alternate split directions */
+.section:nth-of-type(2) .split { flex-direction: row-reverse; }
+.section:nth-of-type(1) .split, .section:nth-of-type(3) .split { flex-direction: row; }
+
+@media (max-width: 980px) { .split { flex-direction: column; text-align: center; } }
+
+/* ---------------- TEAM SECTION ---------------- */
+.team { background: #f6f7fb; padding: 80px 0; text-align: center; }
+.team h2 { font-size: 2rem; margin-bottom: 30px; }
+.team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; }
+.card { background: #fff; padding: 20px; border-radius: 14px; box-shadow: 0 14px 30px rgba(0,0,0,0.08); transition: transform .25s ease, box-shadow .25s ease; }
+.card:hover { transform: translateY(-6px); box-shadow: 0 22px 40px rgba(0,0,0,0.12); }
+
+/* Letter avatars */
+.letter-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #751d1d, #631414);
+  color: #fff;
+  font-size: 48px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 560px) { .team-grid { grid-template-columns: 1fr; } }
+
+/* ---------------- FOOTER ---------------- */
+footer { background: #0f1724; text-align: center; padding: 20px 0; color: #dbeafe; }
+
+/* ---------------- ANIMATIONS ---------------- */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- ---------------- TOP NAVIGATION ---------------- -->
+<nav style="position: fixed; top: 0; left: 0; width: 100%; background: rgba(255,255,255,0.15); backdrop-filter: blur(15px); z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 12px 8%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-bottom: 1px solid rgba(255,255,255,0.25);">
+  <div style="font-weight: 600; font-size: 1.4rem; color: #e9e9e9;">Cosmo Blog</div>
+  <ul style="list-style: none; display: flex; gap: 25px; margin: 0;">
+    <li><a href="all-posts.html" style="text-decoration: none; color: #e9e9e9; font-weight: 500;">Home</a></li>
+    <li><a href="blogs.html" style="text-decoration: none; color: #e9e9e9; font-weight: 500;">Blogs</a></li>
+    <li><a href="profile.html" style="text-decoration: none; color: #e9e9e9; font-weight: 500;">Profile</a></li>
+    <li><a href="about-us.html" style="text-decoration: none; color: #e9e9e9; font-weight: 500;">About</a></li>
+    <li><a href="#" onclick="logout()" style="text-decoration: none; color: #e9e9e9; font-weight: 500; cursor: pointer;">Logout</a></li>
+  </ul>
+</nav>
+
+<header class="hero">
+  <img id="hero-image" src="assets/Jessica Kowalski.png" alt="Cosmo Blog Hero" />
+  <div class="inner container">
+    <div class="glass-box">
+      <h1>About Us</h1>
+      <p>Cosmo Blog — a home for creators, thinkers, and storytellers.</p>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="section container reveal">
+  <div class="split">
+    <div class="col text">
+      <h2>Our Story</h2>
+      <p>What started as a collage side project has now grown into a passionate blogging website.</p>
+      <p>We are more than a platform—we are a group of thinkers and dreamers, united by the desire to share, learn, and grow together. We believe in simplicity, creativity, and content that truly connects.</p>
+      <p>Welcome to Cosmo Blog—where every word matters.</p>
+    </div>
+    <div class="col img-card">
+      <img src="https://images.unsplash.com/photo-1447069387593-a5de0862481e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8b3VyJTIwc3Rvcnl8ZW58MHx8MHx8fDA%3D" alt="Our Story">
+    </div>
+  </div>
+</section>
+
+<section class="section container reveal">
+  <div class="split">
+    <div class="col text">
+      <h2>Our Mission</h2>
+      <p>Our mission at Cosmo Blog is to empower storytellers and celebrate authentic voices. We aim to create a space where ideas, experiences, and perspectives can be shared freely, inspiring connection, understanding, and growth.</p>
+      <p>At Cosmo Blog, we believe that stories have the power to inform, inspire, and bring people together, and our mission is to make sure those stories are heard.</p>
+    </div>
+    <div class="col img-card">
+      <img src="https://images.unsplash.com/photo-1455849318743-b2233052fcff?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8b3VyJTIwbWlzc2lvbnxlbnwwfHwwfHx8MA%3D%3D" alt="Our Mission">
+    </div>
+  </div>
+</section>
+
+<section class="section container reveal">
+  <div class="split">
+    <div class="col text">
+      <h2>Our Vision</h2>
+      <p>We want to build a future where thoughtful writing has a true home.</p>
+      <p>Our aim is to make publishing delightful, simple, and inspiring.</p>
+    </div>
+    <div class="col img-card">
+      <img src="https://images.unsplash.com/photo-1595312222782-e5e2517b14b7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fG91ciUyMG1pc3Npb258ZW58MHx8MHx8fDA%3D" alt="Our Vision">
+    </div>
+  </div>
+</section>
+
+<section class="team reveal">
+  <div class="container">
+    <h2>Meet the Team</h2>
+    <div class="team-grid">
+      <div class="card reveal">
+        <div class="letter-avatar">M</div>
+        <h3>Madhu</h3>
+        
+      </div>
+      <div class="card reveal">
+        <div class="letter-avatar">G</div>
+        <h3>Gayatri</h3>
+        
+      </div>
+      <div class="card reveal">
+        <div class="letter-avatar">M</div>
+        <h3>Manasa</h3>
+        
+      </div>
+      <div class="card reveal">
+        <div class="letter-avatar">B</div>
+        <h3>Basavarajeshwari</h3>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>© <span id="year"></span> Cosmo Blog</p>
+</footer>
+
+<script>
+// Set year
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// Reveal animations
+const reveals = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){ entry.target.classList.add('show'); }
+  });
+}, { threshold: 0.2 });
+reveals.forEach(el => revealObserver.observe(el));
+
+// Hero smooth zoom + parallax
+const heroImage = document.getElementById('hero-image');
+const heroSection = document.querySelector('.hero');
+const maxScroll = heroSection.offsetHeight;
+const minScale = 1.2;
+const maxScale = 1.4;
+const zoomSpeed = 0.01;
+let t = 0;
+
+function animateHero() {
+  t += zoomSpeed;
+  const sineValue = (Math.sin(t) + 1) / 2;
+  const scale = minScale + (maxScale - minScale) * sineValue;
+  const scrollY = window.scrollY;
+  const scrollProgress = Math.min(scrollY / maxScroll, 1);
+  const maxTranslateY = -30;
+  const translateY = scrollProgress * maxTranslateY;
+  heroImage.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+  requestAnimationFrame(animateHero);
+}
+
+animateHero();
+
+function logout() {
+  // Example: clear session/localStorage if needed
+  // localStorage.removeItem("user"); // Uncomment if you store login info
+  alert("Logging out...");
+  window.location.href = "login.html"; // Redirect to login page
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmo Blog – Create Blog</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- ✅ Jodit Editor -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jodit@3.24.5/build/jodit.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jodit@3.24.5/build/jodit.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --text-light: #e2e8f0;
+      --text-dark: #0f172a;
+      --primary: #2563eb;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background-color: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      justify-content: space-between;
+      transition: 0.3s;
+    }
+
+    .sidebar h2 {
+      font-size: 22px;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar h2 img { height: 35px; }
+
+    .sidebar a {
+      text-decoration: none;
+      padding: 12px 16px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    /* Dark mode toggle */
+    .theme-toggle {
+      margin-top: 10px;
+      background: none;
+      border: 1px solid #64748b;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px;
+      background-color: var(--bg-dark);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 850px;
+      margin: 0 auto;
+      transition: background 0.3s;
+    }
+
+    .card h2 { font-size: 22px; margin-bottom: 10px; }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background-color: #0f172a;
+      color: white;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    /* ✅ Jodit Editor Styling */
+    #description {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .jodit-container {
+      border-radius: 10px;
+      overflow: hidden;
+      border: none !important;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .jodit-toolbar__box {
+      border-bottom: 1px solid #ccc !important;
+      position: sticky !important;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 10px !important;
+    }
+
+    .jodit-toolbar-button {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 1px !important;
+    }
+
+    .jodit-toolbar-button__button {
+      border-radius: 6px !important;
+      padding: 5px !important;
+      min-width: 28px !important;
+      height: 28px !important;
+    }
+
+    .jodit-wysiwyg {
+      min-height: 350px;
+      font-size: 15px;
+      padding: 12px;
+      border-radius: 10px;
+    }
+
+    /* ✅ Thumbnail preview styling */
+    .preview-container {
+      margin-top: 20px;
+      border: 1px dashed #64748b;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      background-color: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .preview {
+      margin-top: 10px;
+      max-width: 48%;
+      max-height: 200px;
+      border-radius: 10px;
+      display: block;
+      object-fit: contain;
+    }
+
+    #thumbnail, #videoUpload {
+      background: none;
+      border: 1px solid #475569;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+      width: 100%;
+    }
+
+    [data-theme="light"] .preview-container {
+      background-color: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    /* =========================== */
+    [data-theme="dark"] body {
+      background-color: #0f172a;
+      color: #e2e8f0;
+    }
+
+    [data-theme="light"] body {
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+
+    [data-theme="dark"] .sidebar { background-color: #1e293b; color: #e2e8f0; }
+    [data-theme="light"] .sidebar { background-color: #e2e8f0; color: #0f172a; }
+
+    [data-theme="dark"] .sidebar a { color: #cbd5e1; }
+    [data-theme="light"] .sidebar a { color: #1e293b; }
+
+    [data-theme="light"] .sidebar a:hover,
+    [data-theme="light"] .sidebar a.active {
+      background-color: #2563eb;
+      color: white;
+    }
+
+    [data-theme="dark"] .card { background-color: #1e293b; color: #e2e8f0; }
+    [data-theme="light"] .card { background-color: #ffffff; color: #0f172a; }
+
+    [data-theme="dark"] label { color: #cbd5e1; }
+    [data-theme="light"] label { color: #0f172a; }
+
+    [data-theme="dark"] input,
+    [data-theme="dark"] select { background-color: #0f172a; color: #e2e8f0; }
+    [data-theme="light"] input,
+    [data-theme="light"] select { background-color: #f8fafc; color: #0f172a; }
+
+    [data-theme="dark"] .theme-toggle { color: #cbd5e1; border-color: #64748b; }
+    [data-theme="light"] .theme-toggle { color: #0f172a; border-color: #94a3b8; }
+
+    [data-theme="dark"] .jodit-toolbar__box { background: #1e293b !important; }
+    [data-theme="light"] .jodit-toolbar__box { background: #f8f9fa !important; }
+
+    [data-theme="dark"] .jodit-wysiwyg { background: #0f172a !important; color: #e2e8f0 !important; }
+    [data-theme="light"] .jodit-wysiwyg { background: white !important; color: black !important; }
+
+    [data-theme="dark"] .jodit-toolbar-button__icon svg,
+    [data-theme="dark"] .jodit-toolbar-button__icon,
+    [data-theme="dark"] .jodit-toolbar-button__icon i {
+      fill: #ffffff !important;
+      color: #ffffff !important;
+    }
+
+    [data-theme="light"] .jodit-toolbar-button__icon svg,
+    [data-theme="light"] .jodit-toolbar-button__icon,
+    [data-theme="light"] .jodit-toolbar-button__icon i {
+      fill: #000000 !important;
+      color: #000000 !important;
+    }
+
+    button.create-btn,
+    button.publish-btn,
+    button.remove-btn {
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button.create-btn {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    button.publish-btn {
+      background-color: #16a34a;
+      color: white;
+      margin-right: 10px;
+    }
+
+    button.remove-btn {
+      background-color: #dc2626;
+      color: white;
+    }
+
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .hidden { display: none; }
+    /* ================= MOBILE RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .content {
+    padding: 25px;
+  }
+
+  .card {
+    padding: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+    height: auto;
+  }
+
+  /* Sidebar becomes top bar */
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+    overflow-x: auto;
+  }
+
+  .sidebar h2 {
+    margin-bottom: 0;
+    font-size: 18px;
+    white-space: nowrap;
+  }
+
+  .sidebar a {
+    margin-bottom: 0;
+    padding: 8px 12px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .main {
+    height: auto;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .card {
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  /* Image + Video stack vertically */
+  .content > .card div[style*="display: flex"] {
+    flex-direction: column;
+    gap: 25px !important;
+  }
+
+  .preview {
+    max-width: 100%;
+    max-height: 220px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar h2 img {
+    height: 28px;
+  }
+
+  .sidebar h2 {
+    font-size: 16px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  input,
+  select {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .jodit-wysiwyg {
+    min-height: 280px;
+    font-size: 14px;
+  }
+
+  .card h2 {
+    font-size: 18px;
+  }
+
+  .card p {
+    font-size: 14px;
+  }
+}
+
+  
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div>
+      <h2><img src="logo.png" alt="">Cosmo Blog
+      
+      </h2>
+      <a href="all-posts.html"><i class="fa-solid fa-house"></i> Home</a>
+      <a href="yourblogs.html"><i class="fa-solid fa-book"></i> My Blogs</a>
+      <a href="create-blog.html" class="active"><i class="fa-solid fa-pen"></i> Create Blog</a>
+      <a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+      <a href="about-us.html"><i class="fa-solid fa-circle-info"></i> About</a>
+      
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="content">
+      <div class="card" id="step1">
+        <h2>Let's create blog</h2>
+        <p>Fill out the basic details below to start your blog.</p>
+
+        <label for="blogTitle">Title</label>
+        <input type="text" id="blogTitle" placeholder="Your Blog Name" />
+
+
+        <label for="mainCategory">Main Category</label>
+        <select id="mainCategory">
+          <option value="">Select a main category</option>
+        </select>
+
+        <label for="subCategory">Subcategory</label>
+        <select id="subCategory" disabled>
+          <option value="">Select a subcategory</option>
+        </select>
+
+
+
+
+        <button class="create-btn" id="createBtn">Create</button>
+      </div>
+
+      <div class="card hidden" id="step2">
+        <h2>Basic Blog Information</h2>
+        <p>Make changes to your blog here. Click publish when you're done.</p>
+
+        <label for="titleInput">Title</label>
+        <input type="text" id="titleInput" placeholder="Enter your blog title" />
+
+
+        <label for="description">Description</label>
+        <textarea id="description" placeholder="Start writing..."></textarea>
+
+        <!-- ✅ Image + Video Upload Side by Side -->
+        <div style="display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; justify-content: space-between;">
+          <!-- Image Upload -->
+          <div style="flex: 1; min-width: 300px;">
+            <label for="imageUploade">Image</label>
+            <input type="file" id="imageUpload" accept="image/*" />
+            <div class="preview-container hidden" id="previewContainer">
+              <p>Preview:</p>
+              <img id="imagePreview" class="preview hidden" alt="Image Preview" />
+            </div>
+
+            <!-- ✅ Image URL Input -->
+            <label for="imageURL">Image URL</label>
+            <input type="url" id="imageURL" placeholder="Enter image URL" />
+          </div>
+
+           <!-- Video Upload -->
+           <div style="flex: 1; min-width: 300px;">
+            <label for="videoUpload">Video</label>
+            <input type="file" id="videoUpload" accept="video/*" />
+            <div class="preview-container hidden" id="videoPreviewContainer">
+              <p>Preview:</p>
+              <video id="videoPreviewBox" class="preview hidden" controls></video>
+            </div>
+
+            <!-- ✅ Video URL Input -->
+            <label for="videoURL">Video URL</label>
+            <input type="url" id="videoURL" placeholder="Enter video URL (e.g. YouTube, Vimeo...)" />
+          </div>
+        </div>
+
+
+        <div class="button-group">
+          <button class="publish-btn" id="publishBtn"><i class="fa-solid fa-upload"></i> Publish</button>
+          <button class="remove-btn" id="removeBtn"><i class="fa-solid fa-trash"></i> Remove Blog</button>
+          <button class="create-btn" id="generateAI">Generate with AI</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const categories = [
+// --- Main Categories ---
+{id: '1', name: 'Travel', parent: null},
+{id: '2', name: 'Technology', parent: null},
+{id: '3', name: 'Food', parent: null},
+{id: '4', name: 'Nature', parent: null},
+{id: '5', name: 'Entertainment', parent: null},
+{id: '6', name: 'Education', parent: null},
+{id: '7', name: 'Art', parent: null},
+{id: '8', name: 'Business', parent: null},
+{id: '9', name: 'Lifestyle', parent: null},
+{id: '10', name: 'Health & Wellness', parent: null},
+{id: '11', name: 'Sports', parent: null},
+{id: '12', name: 'Parenting & Family', parent: null},
+{id: '13', name: 'Automotive', parent: null},
+{id: '14', name: 'DIY & Home', parent: null},
+{id: '15', name: 'Religion & Spirituality', parent: null},
+{id: '16', name: 'News & Current Affairs', parent: null},
+{id: '17', name: 'Miscellaneous', parent: null},
+
+// --- Travel Subcategories ---
+{id: '18', name: 'Adventure', parent: 'Travel'},
+{id: '19', name: 'Backpacking', parent: 'Travel'},
+{id: '20', name: 'Road Trips', parent: 'Travel'},
+{id: '21', name: 'Mountains', parent: 'Travel'},
+{id: '22', name: 'Beaches', parent: 'Travel'},
+{id: '23', name: 'City Guides', parent: 'Travel'},
+{id: '24', name: 'Culture & Heritage', parent: 'Travel'},
+{id: '25', name: 'Wildlife & Safari', parent: 'Travel'},
+{id: '26', name: 'Cruises', parent: 'Travel'},
+{id: '27', name: 'Solo Travel', parent: 'Travel'},
+{id: '28', name: 'Travel Tips', parent: 'Travel'},
+{id: '29', name: 'Local Experiences', parent: 'Travel'},
+{id: '30', name: 'Travel Photography', parent: 'Travel'},
+
+// --- Technology Subcategories ---
+{id: '31', name: 'Gadgets', parent: 'Technology'},
+{id: '32', name: 'AI & Robotics', parent: 'Technology'},
+{id: '33', name: 'Software & Apps', parent: 'Technology'},
+{id: '34', name: 'Science', parent: 'Technology'},
+{id: '35', name: 'Space & Astronomy', parent: 'Technology'},
+{id: '36', name: 'Tech Reviews', parent: 'Technology'},
+{id: '37', name: 'Programming & Coding', parent: 'Technology'},
+{id: '38', name: 'Cybersecurity', parent: 'Technology'},
+{id: '39', name: 'Mobile Tech', parent: 'Technology'},
+{id: '40', name: 'VR/AR', parent: 'Technology'},
+{id: '41', name: 'Blockchain & Cryptocurrency', parent: 'Technology'},
+{id: '42', name: 'Web3 & Metaverse', parent: 'Technology'},
+{id: '43', name: 'Cloud Computing', parent: 'Technology'},
+{id: '44', name: 'Smart Home Devices', parent: 'Technology'},
+{id: '45', name: 'Tech News', parent: 'Technology'},
+
+// --- Food Subcategories ---
+{id: '46', name: 'Food & Recipes', parent: 'Food'},
+{id: '47', name: 'Cooking Tips', parent: 'Food'},
+{id: '48', name: 'Restaurants & Cafes', parent: 'Food'},
+{id: '49', name: 'Baking', parent: 'Food'},
+{id: '50', name: 'Vegan/Vegetarian', parent: 'Food'},
+{id: '51', name: 'Street Food', parent: 'Food'},
+{id: '52', name: 'Gourmet', parent: 'Food'},
+{id: '53', name: 'Beverages', parent: 'Food'},
+{id: '54', name: 'Food Reviews', parent: 'Food'},
+{id: '55', name: 'Nutrition', parent: 'Food'},
+{id: '56', name: 'Diet Trends', parent: 'Food'},
+
+// --- Nature Subcategories ---
+{id: '57', name: 'Wildlife', parent: 'Nature'},
+{id: '58', name: 'Sustainability', parent: 'Nature'},
+{id: '59', name: 'Gardening', parent: 'Nature'},
+{id: '60', name: 'Eco-friendly Living', parent: 'Nature'},
+{id: '61', name: 'Climate Change', parent: 'Nature'},
+{id: '62', name: 'Conservation', parent: 'Nature'},
+{id: '63', name: 'Forests & Parks', parent: 'Nature'},
+{id: '64', name: 'Marine Life', parent: 'Nature'},
+{id: '65', name: 'Natural Wonders', parent: 'Nature'},
+{id: '66', name: 'Recycling & Upcycling', parent: 'Nature'},
+{id: '67', name: 'Green Energy', parent: 'Nature'},
+{id: '68', name: 'Environmental News', parent: 'Nature'},
+
+// --- Entertainment Subcategories ---
+{id: '69', name: 'Movies & TV Shows', parent: 'Entertainment'},
+{id: '70', name: 'Music', parent: 'Entertainment'},
+{id: '71', name: 'Books & Literature', parent: 'Entertainment'},
+{id: '72', name: 'Gaming', parent: 'Entertainment'},
+{id: '73', name: 'Celebrities', parent: 'Entertainment'},
+{id: '74', name: 'Pop Culture', parent: 'Entertainment'},
+{id: '75', name: 'Theater & Performing Arts', parent: 'Entertainment'},
+{id: '76', name: 'Podcasts', parent: 'Entertainment'},
+{id: '77', name: 'Comics & Animation', parent: 'Entertainment'},
+{id: '78', name: 'Awards & Festivals', parent: 'Entertainment'},
+{id: '79', name: 'Streaming Services', parent: 'Entertainment'},
+{id: '80', name: 'Fan Communities', parent: 'Entertainment'},
+
+// --- Education Subcategories ---
+{id: '81', name: 'Online Learning', parent: 'Education'},
+{id: '82', name: 'Study Tips', parent: 'Education'},
+{id: '83', name: 'Career Advice', parent: 'Education'},
+{id: '84', name: 'Skill Development', parent: 'Education'},
+{id: '85', name: 'Scholarships', parent: 'Education'},
+{id: '86', name: 'Research', parent: 'Education'},
+{id: '87', name: 'Language Learning', parent: 'Education'},
+{id: '88', name: 'Exams & Certifications', parent: 'Education'},
+{id: '89', name: 'Educational Technology', parent: 'Education'},
+
+// --- Art Subcategories ---
+{id: '90', name: 'Art', parent: 'Art'},
+{id: '91', name: 'Photography', parent: 'Art'},
+{id: '92', name: 'Design', parent: 'Art'},
+{id: '93', name: 'Crafts', parent: 'Art'},
+{id: '94', name: 'Writing & Poetry', parent: 'Art'},
+{id: '95', name: 'Digital Art', parent: 'Art'},
+{id: '96', name: 'Architecture', parent: 'Art'},
+{id: '97', name: 'Fashion Design', parent: 'Art'},
+{id: '98', name: 'Sculpture', parent: 'Art'},
+{id: '99', name: 'Calligraphy', parent: 'Art'},
+{id: '100', name: 'Illustration', parent: 'Art'},
+
+// --- Business Subcategories ---
+{id: '101', name: 'Startups', parent: 'Business'},
+{id: '102', name: 'Marketing', parent: 'Business'},
+{id: '103', name: 'Economics', parent: 'Business'},
+{id: '104', name: 'Investing', parent: 'Business'},
+{id: '105', name: 'Entrepreneurship', parent: 'Business'},
+{id: '106', name: 'Leadership', parent: 'Business'},
+{id: '107', name: 'Small Business Tips', parent: 'Business'},
+{id: '108', name: 'Corporate News', parent: 'Business'},
+{id: '109', name: 'Real Estate', parent: 'Business'},
+{id: '110', name: 'E-commerce', parent: 'Business'},
+{id: '111', name: 'Remote Work', parent: 'Business'},
+{id: '112', name: 'Productivity Tools', parent: 'Business'},
+{id: '113', name: 'Personal Finance', parent: 'Business'},
+
+// --- Lifestyle Subcategories ---
+{id: '114', name: 'Lifestyle', parent: 'Lifestyle'},
+{id: '115', name: 'Opinion & Editorial', parent: 'Lifestyle'},
+{id: '116', name: 'Reviews', parent: 'Lifestyle'},
+{id: '117', name: 'Motivation & Inspiration', parent: 'Lifestyle'},
+{id: '118', name: 'History', parent: 'Lifestyle'},
+{id: '119', name: 'Philosophy', parent: 'Lifestyle'},
+{id: '120', name: 'Politics', parent: 'Lifestyle'},
+{id: '121', name: 'Society & Culture', parent: 'Lifestyle'},
+{id: '122', name: 'Travel Tips', parent: 'Lifestyle'},
+{id: '123', name: 'Hobbies', parent: 'Lifestyle'},
+{id: '124', name: 'Self-Improvement', parent: 'Lifestyle'},
+{id: '125', name: 'Minimalism', parent: 'Lifestyle'},
+{id: '126', name: 'Productivity Hacks', parent: 'Lifestyle'},
+{id: '127', name: 'Daily Life Tips', parent: 'Lifestyle'},
+
+// --- Health & Wellness Subcategories ---
+{id: '128', name: 'Mental Health', parent: 'Health & Wellness'},
+{id: '129', name: 'Fitness', parent: 'Health & Wellness'},
+{id: '130', name: 'Nutrition', parent: 'Health & Wellness'},
+{id: '131', name: 'Yoga & Meditation', parent: 'Health & Wellness'},
+{id: '132', name: 'Healthy Lifestyle', parent: 'Health & Wellness'},
+{id: '133', name: 'Alternative Medicine', parent: 'Health & Wellness'},
+{id: '134', name: 'Disease Awareness', parent: 'Health & Wellness'},
+{id: '135', name: 'Personal Care', parent: 'Health & Wellness'},
+{id: '136', name: 'Sleep & Relaxation', parent: 'Health & Wellness'},
+{id: '137', name: 'Weight Loss', parent: 'Health & Wellness'},
+{id: '138', name: 'Medical News', parent: 'Health & Wellness'},
+{id: '139', name: 'Sports Medicine', parent: 'Health & Wellness'},
+
+// --- Sports Subcategories ---
+{id: '140', name: 'Football', parent: 'Sports'},
+{id: '141', name: 'Cricket', parent: 'Sports'},
+{id: '142', name: 'Basketball', parent: 'Sports'},
+{id: '143', name: 'Tennis', parent: 'Sports'},
+{id: '144', name: 'Swimming', parent: 'Sports'},
+{id: '145', name: 'Extreme Sports', parent: 'Sports'},
+{id: '146', name: 'eSports', parent: 'Sports'},
+{id: '147', name: 'Martial Arts', parent: 'Sports'},
+{id: '148', name: 'Athletics', parent: 'Sports'},
+{id: '149', name: 'Cycling', parent: 'Sports'},
+{id: '150', name: 'Motorsport', parent: 'Sports'},
+
+// --- Parenting & Family Subcategories ---
+{id: '152', name: 'Childcare', parent: 'Parenting & Family'},
+{id: '153', name: 'Parenting Tips', parent: 'Parenting & Family'},
+{id: '154', name: 'Family Activities', parent: 'Parenting & Family'},
+{id: '155', name: 'Pregnancy & Motherhood', parent: 'Parenting & Family'},
+{id: '156', name: 'Education for Kids', parent: 'Parenting & Family'},
+{id: '157', name: 'Teen Guidance', parent: 'Parenting & Family'},
+{id: '158', name: 'Relationships', parent: 'Parenting & Family'},
+
+// --- Automotive Subcategories ---
+{id: '159', name: 'Cars', parent: 'Automotive'},
+{id: '160', name: 'Bikes', parent: 'Automotive'},
+{id: '161', name: 'EVs & Hybrid Vehicles', parent: 'Automotive'},
+{id: '162', name: 'Vehicle Reviews', parent: 'Automotive'},
+{id: '163', name: 'Automotive Technology', parent: 'Automotive'},
+{id: '164', name: 'Car Maintenance', parent: 'Automotive'},
+{id: '165', name: 'Motorsport News', parent: 'Automotive'},
+
+// --- DIY & Home Subcategories ---
+{id: '166', name: 'DIY Projects', parent: 'DIY & Home'},
+{id: '167', name: 'Home Improvement', parent: 'DIY & Home'},
+{id: '168', name: 'Interior Design', parent: 'DIY & Home'},
+{id: '169', name: 'Organization & Storage', parent: 'DIY & Home'},
+{id: '170', name: 'Home Automation', parent: 'DIY & Home'},
+{id: '171', name: 'Gardening & Landscaping', parent: 'DIY & Home'},
+
+// --- Religion & Spirituality Subcategories ---
+{id: '172', name: 'Meditation', parent: 'Religion & Spirituality'},
+{id: '173', name: 'Beliefs', parent: 'Religion & Spirituality'},
+{id: '174', name: 'Philosophy', parent: 'Religion & Spirituality'},
+{id: '175', name: 'Religious Practices', parent: 'Religion & Spirituality'},
+{id: '176', name: 'Spiritual Growth', parent: 'Religion & Spirituality'},
+{id: '177', name: 'Mindfulness', parent: 'Religion & Spirituality'},
+
+// --- News & Current Affairs Subcategories ---
+{id: '178', name: 'Politics', parent: 'News & Current Affairs'},
+{id: '179', name: 'International News', parent: 'News & Current Affairs'},
+{id: '180', name: 'National News', parent: 'News & Current Affairs'},
+{id: '181', name: 'Economics News', parent: 'News & Current Affairs'},
+{id: '182', name: 'Social Issues', parent: 'News & Current Affairs'},
+{id: '183', name: 'Opinion Pieces', parent: 'News & Current Affairs'},
+{id: '184', name: 'Trending Topics', parent: 'News & Current Affairs'},
+
+// --- Miscellaneous Subcategories ---
+{id: '185', name: 'Memes & Humor', parent: 'Miscellaneous'},
+{id: '186', name: 'Viral Content', parent: 'Miscellaneous'},
+{id: '187', name: 'Social Media Trends', parent: 'Miscellaneous'},
+{id: '188', name: 'Pop Culture Trends', parent: 'Miscellaneous'},
+{id: '189', name: 'Technology Trends', parent: 'Miscellaneous'},
+{id: '190', name: 'Life Hacks', parent: 'Miscellaneous'}
+
+
+  ];
+
+  const mainSelect = document.getElementById("mainCategory");
+  const subSelect = document.getElementById("subCategory");
+
+  // Populate main categories
+  const mainCategories = categories.filter(cat => !cat.parent);
+  mainCategories.forEach(main => {
+    const option = document.createElement("option");
+    option.value = main.name;
+    option.textContent = main.name;
+    mainSelect.appendChild(option);
+  });
+
+  // Populate subcategories on main category selection
+  mainSelect.addEventListener("change", () => {
+    const selectedMain = mainSelect.value;
+    subSelect.innerHTML = '<option value="">Select a subcategory</option>'; // reset
+    if (!selectedMain) {
+      subSelect.disabled = true;
+      return;
+    }
+
+    const subs = categories.filter(cat => cat.parent === selectedMain);
+    subs.forEach(sub => {
+      const option = document.createElement("option");
+      option.value = sub.name;
+      option.textContent = sub.name;
+      subSelect.appendChild(option);
+    });
+
+    subSelect.disabled = subs.length === 0; // disable if no subcategories
+  });
+
+  // ✅ Step Transition (Updated for cascading dropdowns)
+  const createBtn = document.getElementById("createBtn");
+  if (createBtn) {
+    createBtn.addEventListener("click", () => {
+      const title = document.getElementById("blogTitle").value.trim();
+      const mainCat = mainSelect.value.trim();
+      const subCat = subSelect.value.trim();
+
+      if (!title || !mainCat) {
+        alert("Please fill out the title and main category before proceeding.");
+        return;
+      }
+
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.remove("hidden");
+      document.getElementById("titleInput").value = title;
+
+      // Save selected category (use subcategory if selected, else main)
+      document.getElementById("category").value = subCat || mainCat;
+    });
+  }
+
+
+  // ✅ Initialize Jodit Editor
+  const editor = new Jodit("#description", {
+    height: 400,
+    toolbarAdaptive: false,
+    showCharsCounter: true,
+    showWordsCounter: true,
+    showXPathInStatusbar: false,
+    toolbarSticky: true,
+    buttons: [
+      "source", "|", "bold", "italic", "underline", "strikethrough", "|",
+      "ul", "ol", "indent", "outdent", "|",
+      "font", "fontsize", "brush", "paragraph", "|",
+      "image", "video", "file", "table", "link", "|",
+      "align", "left", "center", "right", "justify", "|",
+      "undo", "redo", "hr", "eraser", "copyformat", "|",
+      "selectall", "cut", "copy", "paste", "|",
+      "print", "preview", "fullsize", "spellcheck", "about"
+    ]
+  });
+
+// ---------------------- SAVE DRAFT ----------------------
+function saveDraft() {
+    const draft = {
+        title: document.getElementById("blogTitle").value,
+        mainCategory: document.getElementById("mainCategory").value,
+        subCategory: document.getElementById("subCategory").value,
+        content: editor.value
+    };
+    localStorage.setItem("draftBlog", JSON.stringify(draft));
+}
+
+// Save draft on input/change
+document.getElementById("blogTitle").addEventListener("input", saveDraft);
+document.getElementById("mainCategory").addEventListener("change", saveDraft);
+document.getElementById("subCategory").addEventListener("change", saveDraft);
+editor.events.on("change", saveDraft);  // Jodit editor change event
+
+// ---------------------- RESTORE DRAFT ----------------------
+const savedDraft = JSON.parse(localStorage.getItem("draftBlog") || "{}");
+if (savedDraft && Object.keys(savedDraft).length > 0) {
+    document.getElementById("blogTitle").value = savedDraft.title || "";
+    document.getElementById("mainCategory").value = savedDraft.mainCategory || "";
+
+    // Populate subcategories based on saved main category
+    const event = new Event("change");
+    document.getElementById("mainCategory").dispatchEvent(event);
+
+    document.getElementById("subCategory").value = savedDraft.subCategory || "";
+    editor.value = savedDraft.content || "";
+}
+
+
+// ----------------------- IMAGE PREVIEW -----------------------
+const imageInput = document.getElementById("imageUpload");
+const imageURLInput = document.getElementById("imageURL");
+const previewContainer = document.getElementById("previewContainer");
+const imagePreview = document.getElementById("imagePreview");
+
+// Local Image Upload
+imageInput.addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  imagePreview.src = URL.createObjectURL(file);
+  imagePreview.classList.remove("hidden");
+  previewContainer.classList.remove("hidden");
+
+  // Clear URL input
+  imageURLInput.value = "";
+});
+
+// Image URL Preview
+imageURLInput.addEventListener("input", () => {
+  const url = imageURLInput.value.trim();
+  if (!url) {
+    imagePreview.src = "";
+    imagePreview.classList.add("hidden");
+    previewContainer.classList.add("hidden");
+    return;
+  }
+
+  imagePreview.src = url;
+  imagePreview.classList.remove("hidden");
+  previewContainer.classList.remove("hidden");
+
+  // Clear local file input
+  imageInput.value = "";
+});
+
+// Fallback if image fails to load
+imagePreview.onerror = () => {
+  imagePreview.src = "/uploads/no-image.png";
+};
+
+// ----------------------- VIDEO PREVIEW -----------------------
+const videoInput = document.getElementById("videoUpload");
+const videoURLInput = document.getElementById("videoURL");
+const videoPreviewContainer = document.getElementById("videoPreviewContainer");
+const videoPreviewBox = document.getElementById("videoPreviewBox");
+
+// Local Video Upload
+videoInput.addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  videoPreviewBox.src = URL.createObjectURL(file);
+  videoPreviewBox.classList.remove("hidden");
+  videoPreviewContainer.classList.remove("hidden");
+
+  // Clear URL input
+  videoURLInput.value = "";
+});
+
+// Video URL Preview (any video URL, including YouTube/Vimeo)
+videoURLInput.addEventListener("input", () => {
+  const url = videoURLInput.value.trim();
+  if (!url) {
+    videoPreviewBox.src = "";
+    videoPreviewBox.classList.add("hidden");
+    videoPreviewContainer.classList.add("hidden");
+    return;
+  }
+
+  videoPreviewBox.src = url;
+  videoPreviewBox.classList.remove("hidden");
+  videoPreviewContainer.classList.remove("hidden");
+
+  // Clear local file input
+  videoInput.value = "";
+});
+
+// Fallback if video fails to load
+videoPreviewBox.onerror = () => {
+  videoPreviewBox.src = "";
+  videoPreviewBox.classList.add("hidden");
+  videoPreviewContainer.classList.add("hidden");
+};
+
+  // ✅ Publish & Remove Logic
+  const publishBtn = document.getElementById("publishBtn");
+  const removeBtn = document.getElementById("removeBtn");
+
+if (publishBtn) {
+    publishBtn.addEventListener("click", async () => {
+        // NOTE: subtitleInput doesn't exist in HTML, using categoryInput for logic
+        const titleInput = document.getElementById("titleInput");
+        const categoryInput = document.getElementById("mainCategory"); // Using main category for context
+
+        const title = titleInput?.value.trim() || "";
+        // const subtitle = subtitleInput?.value.trim() || ""; // Variable removed as input doesn't exist
+        const category = categoryInput?.value.trim() || "General";
+        const content = editor.value.trim();
+        
+        // Get Media Inputs
+        const imageFile = document.getElementById("imageUpload")?.files[0];
+        const videoFile = document.getElementById("videoUpload")?.files[0];
+        const imageURL = document.getElementById("imageURL")?.value.trim() || "";
+        const videoURL = document.getElementById("videoURL")?.value.trim() || "";
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            alert("⚠️ You must be logged in to publish a blog.");
+            console.warn("Publish blocked: No token found in localStorage");
+            return;
+        }
+
+        if (!title || !content) {
+            alert("⚠️ Please enter a title and description before publishing.");
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append("title", title);
+            // formData.append("subtitle", subtitle); // Removed
+            formData.append("description", content);
+            formData.append("category", category);
+            formData.append("status", "published");
+
+            // ✅ CORRECTED LOGIC FOR IMAGE: Prioritize URL over File
+            if (imageURL) {
+                formData.append("imageURL", imageURL);
+            } else if (imageFile) {
+                formData.append("image", imageFile);
+            }
+
+            // ✅ CORRECTED LOGIC FOR VIDEO: Prioritize URL over File
+            if (videoURL) {
+                formData.append("videoURL", videoURL);
+            } else if (videoFile) {
+                formData.append("video", videoFile);
+            }
+
+            console.log("Publishing blog with data:", { title, content, category, imageFile, videoFile, imageURL, videoURL });
+            console.log("FormData prepared, sending request...");
+
+            const response = await fetch("http://localhost:5000/api/add-post", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            console.log("Response received:", response);
+            console.log("Response JSON:", data);
+
+            if (response.ok) {
+                alert("✅ Blog published successfully!");
+                window.location.href = "all-posts.html";
+            } else {
+                alert("⚠️ Failed to publish: " + (data.message || data.error || "Unknown error"));
+            }
+        } catch (error) {
+            console.error("❌ Error publishing blog:", error);
+            alert("❌ Error connecting to the server. Check console for details.");
+        }
+    });
+}
+
+  if (removeBtn) {
+    removeBtn.addEventListener("click", () => {
+      if (confirm("Are you sure you want to remove this blog?")) {
+        document.getElementById("titleInput").value = "";
+        document.getElementById("subtitleInput").value = "";
+        editor.value = "";
+        alert("🗑️ Blog removed successfully.");
+      }
+    });
+  }
+
+  // ✅ Dark Mode Toggle
+  const themeToggle = document.getElementById("themeToggle");
+  const root = document.documentElement;
+
+  function setTheme(theme) {
+    root.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      const current = root.getAttribute("data-theme");
+      const newTheme = current === "dark" ? "light" : "dark";
+      setTheme(newTheme);
+
+      themeToggle.innerHTML =
+        newTheme === "dark"
+          ? '<i class="fa-solid fa-sun"></i> Light Mode'
+          : '<i class="fa-solid fa-moon"></i> Dark Mode';
+    });
+
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    setTheme(savedTheme);
+
+    themeToggle.innerHTML =
+      savedTheme === "dark"
+        ? '<i class="fa-solid fa-sun"></i> Light Mode'
+        : '<i class="fa-solid fa-moon"></i> Dark Mode';
+  }
+});
+
+document.getElementById("generateAI")?.addEventListener("click", () => {
+    window.location.href = "ai.html";
+});
+
+
+
+
+
+</script>
+
+</body>
+</html>

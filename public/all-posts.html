@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmo Blog – All Posts</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{
+      --text-light: #000;
+      --text-dark: #fff;
+      --meta-light: #333;
+      --meta-dark: #ddd;
+      --bg-dark-1: #0f172a;
+      --bg-dark-2: #0f172a;
+      --card-dark: rgba(255,255,255,0.06);
+      --card-dark-hover: rgba(255,255,255,0.10);
+      --accent: #00c6ff;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; font-family:"Poppins", sans-serif; transition: background 0.25s, color 0.25s; }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-dark-1), var(--bg-dark-2));
+      color: var(--text-dark);
+      min-height:100vh; 
+      display:flex; 
+      flex-direction:column; 
+      overflow-x:hidden;
+    }
+
+    body.light {
+      background: #f4f4f4;
+      color: var(--text-light);
+    }
+
+    /* Post card colors */
+    .post-card {
+      background: var(--card-dark);
+      color: var(--text-dark);
+      border-radius:1rem; 
+      padding:1.5rem; 
+      transition: all 0.25s ease;
+      box-shadow:0 5px 15px rgba(0,0,0,0.3); 
+      overflow:hidden; 
+      position:relative;
+    }
+
+    body.light .post-card {
+      background: #fff;
+      color: var(--text-light);
+      box-shadow:0 6px 18px rgba(0,0,0,0.06);
+    }
+
+    .post-card:hover { 
+      transform:translateY(-6px); 
+      background: var(--card-dark-hover); 
+      box-shadow: 0 8px 25px rgba(0,198,255,0.12); 
+    }
+
+    h3.post-title { color: var(--accent); font-size:1.15rem; margin:0 0 10px 0; } 
+
+    .post-footer .meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      flex: 1;
+      margin-bottom: 15px; 
+    }
+
+    .post-footer .meta small,
+    .post-footer .meta i {
+      color: var(--meta-dark);
+    }
+
+    body.light .post-footer .meta small,
+    body.light .post-footer .meta i {
+      color: var(--meta-light);
+    }
+
+    /* Header */
+    header {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid rgba(255,255,255,0.1);
+      position:sticky;
+      top:0;
+      z-index:10;
+      flex-wrap:wrap;
+      gap:1rem;
+      width:100%;
+    }
+
+    body.light header {
+      background: rgba(255,255,255,0.9);
+      border-bottom:1px solid rgba(0,0,0,0.08);
+    }
+
+    .header-left { display:flex; align-items:center; gap:0.7rem; }
+    .header-left img { width:45px; height:45px; border-radius:50%; object-fit:cover; }
+    header h1 { font-size:1.6rem; font-weight:600; letter-spacing:0.5px; }
+
+    .search-bar { position:relative; margin-left:1rem; }
+    .search-bar input {
+      padding:0.5rem 2.5rem 0.5rem 1rem;
+      border-radius:2rem;
+      border:none;
+      outline:none;
+      background: rgba(255,255,255,0.08);
+      color: inherit;
+      font-size:0.9rem;
+      transition: 0.2s;
+    }
+
+    body.light .search-bar input { background: rgba(0,0,0,0.05); color: inherit; }
+    .search-bar input::placeholder { color: rgba(200,200,200,0.6); }
+    .search-bar i { position:absolute; right:0.9rem; top:50%; transform:translateY(-50%); color:var(--accent); }
+
+    nav { display:flex; align-items:center; gap:1rem; }
+    nav a, .blogs-btn { color:inherit; text-decoration:none; font-weight:500; background:none; border:none; cursor:pointer; font-size:1rem; }
+    nav a:hover, .blogs-btn:hover { color: var(--accent); }
+
+    .theme-toggle { background:none; border:none; color:var(--accent); font-size:1.2rem; cursor:pointer; transition:transform 0.25s; }
+    .theme-toggle:hover { transform:rotate(20deg); }
+
+    .profile-container { position:relative; display:flex; align-items:center; gap:0.8rem; }
+    .profile-pic { width:42px; height:42px; border-radius:50%; object-fit:cover; cursor:pointer; border:2px solid var(--accent); }
+
+    .dropdown-menu {
+      position:absolute; top:60px; right:0;
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(12px);
+      border-radius:10px; width: 180px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.3);
+      display:none; flex-direction:column; overflow:hidden; z-index:20;
+    }
+
+    .dropdown-menu.active { display:flex; animation:fadeIn 0.25s ease; }
+
+    @keyframes fadeIn { from {opacity:0; transform:translateY(-8px);} to {opacity:1; transform:translateY(0);} }
+
+    .dropdown-menu a { padding:0.8rem 1rem; text-decoration:none; display:flex; align-items:center; gap:0.6rem; font-size:0.9rem; color:inherit; }
+    .dropdown-menu a:hover { background: rgba(255,255,255,0.12); }
+    body.light .dropdown-menu { background: rgba(255,255,255,0.98); }
+
+    .logout-btn { border-top:1px solid rgba(255,255,255,0.1); }
+    body.light .logout-btn { border-top:1px solid rgba(0,0,0,0.08); }
+
+    /* Posts Grid */
+    .container {
+      flex:1; 
+      width:100%; 
+      padding:2rem 3rem;
+      display:grid; 
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+      gap:1.5rem;
+      opacity:1; 
+      transform:translateY(0); 
+      transition: all 0.3s ease;
+    }
+
+    /* Loader */
+    .loader { 
+      text-align:center; 
+      margin-top:2.5rem; 
+      font-size:1.1rem; 
+      color:var(--accent); 
+      animation:pulse 1.5s infinite; 
+    }
+    @keyframes pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+    #no-more-posts { text-align: center; padding: 2rem 0; font-size: 1rem; color: #ff4d4d; font-weight: 600; display: none; }
+
+
+    footer {
+      text-align:center; 
+      padding:1rem 0; 
+      font-size:0.85rem; 
+      color:rgba(255,255,255,0.6); 
+      background: rgba(255,255,255,0.03); 
+      border-top:1px solid rgba(255,255,255,0.05); 
+      width:100%; 
+      margin-top:2rem; 
+    }
+
+    body.light footer { 
+      color: #666; 
+      background: transparent; 
+      border-top:1px solid rgba(0,0,0,0.06); 
+    }
+
+    /* ---------------------------------------------------- */
+    /* ---------- Carousel Styles (from user's code) ---------- */
+    /* ---------------------------------------------------- */
+
+    #slider {
+      display: flex;
+      gap: 30px;
+      padding: 60px 15vw;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+      margin-bottom: 1.5rem;
+    }
+
+    /* HIDE SCROLLBAR */
+    #slider::-webkit-scrollbar { display:none; }
+
+    #slider .card {
+      width: 60vw;
+      height: 60vh;
+      background: var(--card-dark); 
+      border-radius: 28px;
+      flex-shrink: 0;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      overflow: hidden;
+      position: relative;
+      scroll-snap-align: center;
+      transition: transform 0.5s ease, filter 0.3s ease;
+      color: var(--text-dark);
+      text-decoration: none;
+    }
+    
+    body.light #slider .card {
+        background: #fff;
+        color: var(--text-light);
+    }
+
+    #slider .card.active {
+      transform: scale(1.08);
+      z-index: 20;
+      filter: drop-shadow(0px 15px 35px rgba(0,0,0,0.25));
+    }
+
+    #slider .card img {
+      width: 100%;
+      height: 60%;
+      object-fit: cover;
+    }
+
+    /* SIMPLIFIED CAROUSEL CONTENT */
+    #slider .content { 
+        padding: 20px; 
+    }
+    #slider .content h2 { 
+        color: var(--accent); 
+        margin-bottom: 5px; 
+        font-size: 1.5rem; 
+    }
+    
+    /* Carousel Meta (New) */
+    #slider .content .meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--meta-dark);
+    }
+    
+    body.light #slider .content .meta {
+      color: var(--meta-light);
+    }
+    
+    #slider .content .meta small,
+    #slider .content .meta i {
+        color: inherit;
+    }
+    /* End Carousel Meta */
+    
+    .card .stats { 
+        font-size: 0.9rem; 
+        color: var(--meta-dark);
+        margin-top: 15px; 
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        position: absolute; 
+        bottom: 20px;
+        left: 20px;
+    }
+    
+    body.light .card .stats { 
+        color: var(--meta-light);
+    }
+    
+    .card .stats i { color: var(--accent); margin-right: 3px; }
+
+    @media (max-width: 768px) {
+      #slider { padding: 60px 14vw; }
+      #slider .card { width: 85vw; height: 70vh; }
+    }
+
+    /* ---------------- Dots (from user's code) ---------------- */
+    #slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: -10px;
+      margin-bottom: 25px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .dot.active {
+      background: var(--accent);
+      transform: scale(1.4);
+    }
+    
+    /* Standard media/video styles (for post grid) */
+    .media-container { position: relative; overflow: hidden; border-radius: 10px; height: 200px; margin-bottom: 10px; }
+    .read-more-btn { align-self: auto; background: var(--accent); color: #000; border: none; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: 600; text-align: center; }
+
+    /* Media button placement */
+    .media-container .play-btn,
+    .media-container .back-btn {
+        transition: opacity 0.2s;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-left">
+      <img src="logo.png" alt="Cosmo Blog Logo">
+      <h1>Cosmo Blog</h1>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search posts..." />
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+    </div>
+
+    <nav>
+      <a href="#" id="homeBtn">Home</a>
+      <button class="blogs-btn" id="blogsBtn">Blogs</button>
+      <a href="profile.html">Profile</a> 
+      <a href="about-us.html">About</a>
+      <button class="theme-toggle" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+
+      <div class="profile-container">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="profile-pic" id="profilePic">
+        <div class="dropdown-menu" id="dropdownMenu">
+          <a href="#" id="profileLink"><i class="fa-regular fa-user"></i> Profile</a>
+          </div>
+      </div>
+    </nav>
+  </header>
+
+  <div id="slider">
+    </div>
+
+  <div id="slider-dots"></div>
+
+  <div id="loader" class="loader" style="display:none;">🚀 Loading more posts...</div>
+  <div id="no-more-posts">🎉 You've reached the end of the posts!</div>
+
+  <div id="post-container" class="container"></div>
+
+  <footer>
+    <p>© 2025 Cosmo Blog. All rights reserved.</p>
+  </footer>
+
+  <script>
+
+    // --- UTILITIES ---
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    // --- GLOBAL MEDIA FUNCTIONS ---
+
+    function showVideo(index) {
+        const postCard = document.querySelector(`.post-card[data-index='${index}']`);
+        if (!postCard) return;
+
+        const img = postCard.querySelector('.media-img');
+        const vid = postCard.querySelector('.media-video-element');
+        const backBtn = postCard.querySelector('.back-btn');
+        const playBtn = postCard.querySelector('.play-btn');
+
+        // Hide image
+        if(img) img.style.left = "-100%";
+
+        // Show video/iframe
+        if(vid) {
+            vid.style.left = "0";
+            if (vid.tagName === 'IFRAME') {
+                const src = vid.getAttribute("src").split("&autoplay=1")[0];
+                vid.setAttribute("src", src + "&autoplay=1");
+            }
+        }
+
+        // Toggle buttons
+        if(backBtn) backBtn.style.display = "block";
+        if(playBtn) playBtn.style.display = "none";
+    }
+
+    function showImage(index) {
+        const postCard = document.querySelector(`.post-card[data-index='${index}']`);
+        if (!postCard) return;
+        
+        const img = postCard.querySelector('.media-img');
+        const vid = postCard.querySelector('.media-video-element');
+        const backBtn = postCard.querySelector('.back-btn');
+        const playBtn = postCard.querySelector('.play-btn');
+
+        // Show image
+        if(img) img.style.left = "0";
+
+        // Hide video/iframe
+        if(vid) {
+            vid.style.left = "100%";
+            if (vid.tagName === 'IFRAME') {
+                const src = vid.getAttribute("src").split("&autoplay=1")[0];
+                vid.setAttribute("src", src);
+            } else if (vid.tagName === 'VIDEO') {
+                vid.pause();
+            }
+        }
+
+        // Toggle buttons
+        if(backBtn) backBtn.style.display = "none";
+        if(playBtn) playBtn.style.display = "block";
+    }
+    // ------------------------------------------------------------------
+
+    // --- DOM Elements ---
+    const slider = document.getElementById("slider");
+    const dotsContainer = document.getElementById("slider-dots");
+    const container = document.getElementById("post-container");
+    const loader = document.getElementById("loader");
+    const noMorePostsMsg = document.getElementById("no-more-posts");
+    const homeBtn = document.getElementById("homeBtn");
+    const blogsBtn = document.getElementById("blogsBtn");
+    const themeToggle = document.getElementById("themeToggle");
+    const profilePic = document.getElementById("profilePic");
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    const searchInput = document.getElementById("searchInput");
+    const profileLink = document.getElementById("profileLink");
+    
+    
+    // Dynamically create and add the Logout button
+    const logoutBtn = document.createElement('a');
+    logoutBtn.href = "#";
+    logoutBtn.className = 'logout-btn';
+    logoutBtn.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i> Logout';
+    dropdownMenu.appendChild(logoutBtn);
+
+
+    // --- STATE VARIABLES ---
+    let currentPage = 1;
+    const postsPerLoad = 6;
+    let isLoading = false;
+    let hasMore = true;
+    let allLoadedPosts = [];
+    let currentPostRenderIndex = 0; // Ensures unique index for media buttons
+
+
+    // --- THEME & DROPDOWN ---
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    document.body.classList.toggle("light", savedTheme === "light");
+    themeToggle.innerHTML = savedTheme === "light"
+      ? '<i class="fa-solid fa-sun"></i>'
+      : '<i class="fa-solid fa-moon"></i>';
+    themeToggle.addEventListener("click", () => {
+      const isNowLight = document.body.classList.toggle("light");
+      localStorage.setItem("theme", isNowLight ? "light" : "dark");
+      themeToggle.innerHTML = isNowLight
+        ? '<i class="fa-solid fa-sun"></i>'
+        : '<i class="fa-solid fa-moon"></i>';
+    });
+    profilePic.addEventListener("click", (e) => { dropdownMenu.classList.toggle("active"); e.stopPropagation(); });
+    window.addEventListener("click", (e) => {
+      if (!profilePic.contains(e.target) && !dropdownMenu.contains(e.target))
+        dropdownMenu.classList.remove("active");
+    });
+    profileLink.addEventListener("click", (e) => { e.preventDefault(); window.location.href = "profile.html"; });
+    
+    // Logout Handler
+    logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
+        alert("Logged out successfully! Redirecting to login...");
+        window.location.href = "login.html"; 
+    });
+
+
+    // --- SEARCH LOGIC ---
+    searchInput.addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      window.removeEventListener('scroll', handleScroll);
+      if (q === "") {
+        resetAndLoadPosts(false);
+        return;
+      }
+      const filtered = allLoadedPosts.filter(
+        (p) =>
+          (p.title || "").toLowerCase().includes(q) ||
+          (p.description || "").toLowerCase().includes(q) ||
+          (p.username || "").toLowerCase().includes(q)
+      );
+      container.innerHTML = "";
+      renderPosts(filtered, true);
+      loader.style.display = "none";
+      noMorePostsMsg.style.display = "none";
+    });
+
+    // --- MAIN POSTS FETCH & RENDER ---
+
+    async function fetchPostsFromServer(page, limit) {
+      if (isLoading && page !== 1) return [];
+      if (!hasMore && page !== 1) return [];
+      
+      const isInitialFetch = allLoadedPosts.length === 0 && page === 1;
+
+      if (!isInitialFetch) {
+          isLoading = true;
+          loader.style.display = "block";
+      }
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/posts?page=${page}&limit=${limit}&_=${Date.now()}`, {
+          cache: "no-store",
+        });
+
+        if (!res.ok) { throw new Error(`Server returned ${res.status}`); }
+
+        const posts = await res.json();
+        const publishedPosts = Array.isArray(posts) ? posts.filter((p) => p.status === "published") : [];
+        
+        if (publishedPosts.length < limit) {
+          hasMore = false;
+          if (publishedPosts.length > 0 || allLoadedPosts.length > 0) {
+              noMorePostsMsg.style.display = 'block';
+          }
+        }
+
+        loader.style.display = "none";
+        isLoading = false;
+
+        const processedPosts = publishedPosts.map(p => ({
+            ...p,
+            comments: parseInt(p.comments) || 0,
+            likes: parseInt(p.likes) || 0
+        }));
+        
+        const uniqueNewPosts = processedPosts.filter(newPost =>
+            !allLoadedPosts.some(existingPost => existingPost.id === newPost.id)
+        );
+
+        allLoadedPosts.push(...uniqueNewPosts);
+        
+        if (isInitialFetch) {
+            initCarousel(allLoadedPosts);
+        }
+
+        return uniqueNewPosts;
+      } catch (err) {
+        console.error("❌ Fetch error:", err);
+        loader.textContent = "❌ Failed to load posts.";
+        isLoading = false;
+        hasMore = false;
+        return [];
+      }
+    }
+
+function renderPosts(postsToRender, isSearch = false) {
+    if (!Array.isArray(postsToRender) || postsToRender.length === 0) {
+        const message = isSearch 
+            ? "No posts found matching your search criteria." 
+            : "No posts available yet.";
+        container.innerHTML = `<p style="text-align:center;color:${
+            document.body.classList.contains("light") ? "#666" : "#999"
+        };">${message}</p>`;
+        return;
+    }
+
+    const startRenderIndex = currentPostRenderIndex;
+
+    const getImageUrl = (imgPath) => {
+        if (!imgPath || imgPath.trim() === "" || imgPath.toLowerCase() === "uploads/no-image.png") {
+            return 'https://via.placeholder.com/600x400?text=No+Image';
+        }
+        if (imgPath.startsWith("http://") || imgPath.startsWith("https://")) {
+            return imgPath;
+        }
+
+        // 💡 FIX: Handle Base64 Data URIs (starts with data:)
+        if (imgPath.startsWith("data:")) {
+            return imgPath; // Return the Base64 string directly
+        }
+        return `http://localhost:5000/${imgPath}?_=${Date.now()}`;
+    };
+
+    const newPostsMarkup = postsToRender.map((p, mapIndex) => {
+        const index = startRenderIndex + mapIndex; // Unique index for this render batch
+
+        const date = new Date(p.created_at || Date.now()).toLocaleDateString(
+            undefined,
+            { year: "numeric", month: "short", day: "numeric" }
+        );
+
+        const escapeHtmlSafe = (str) => str ? str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") : "";
+
+        const hasImage = p.image && p.image.trim() !== "" && p.image.toLowerCase() !== "uploads/no-image.png";
+        const hasVideo = p.video && p.video.trim() !== "";
+
+        let mediaHTML = "";
+        const isDualMedia = hasImage && hasVideo;
+        const isImageOnly = hasImage && !hasVideo;
+        const isVideoOnly = hasVideo && !hasImage;
+
+        // --- 1. Dual Media ---
+        if (isDualMedia) {
+            const imageSrc = getImageUrl(p.image);
+
+            mediaHTML += `<img 
+                class="media-img"
+                src="${imageSrc}" 
+                style="width:100%; height:100%; object-fit:cover; border-radius:10px; transition:0.4s; position:absolute; top:0; left:0;"
+            >`;
+
+            mediaHTML += generateVideoElement(p.video, 'position:absolute; top:0; left:100%;');
+
+            mediaHTML += `<button 
+                class="play-btn"
+                data-post-index="${index}"
+                style="position:absolute; bottom:10px; right:10px; background:#000a; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; z-index:11;">
+                <i class="fa-solid fa-play"></i>
+            </button>
+            <button 
+                class="back-btn"
+                data-post-index="${index}"
+                style="position:absolute; top:10px; left:10px; background:#000a; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; display:none; z-index:11;">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>`;
+        } 
+        // --- 2. Image Only ---
+        else if (isImageOnly) {
+            const imageSrc = getImageUrl(p.image);
+            mediaHTML += `<img 
+                class="media-img"
+                src="${imageSrc}" 
+                style="width:100%; height:100%; object-fit:cover; border-radius:10px; position:relative;"
+            >`;
+        } 
+        // --- 3. Video Only ---
+        else if (isVideoOnly) {
+            mediaHTML += generateVideoElement(p.video, 'position:relative;');
+        }
+        // --- 4. No Media ---
+        else {
+            mediaHTML += `<div style="display:flex; justify-content:center; align-items:center; width:100%; height:100%; background: #2f2f3e; border-radius:10px;">
+                <i class="fa-solid fa-file-image" style="font-size:3rem; color:#6b7280;"></i>
+                <span style="font-size:1.5rem; margin-left:10px; color:#6b7280;">NO MEDIA</span>
+            </div>`;
+        }
+
+        return `
+            <div class="post-card" data-index="${index}">
+                <div class="media-container">
+                    ${mediaHTML}
+                </div>
+
+                <h3 class="post-title">${escapeHtmlSafe(p.title || "Untitled")}</h3>
+                <div class="post-footer">
+                    <div class="meta">
+                        <i class="fa-solid fa-user"></i><small>${escapeHtmlSafe(p.username || "Anonymous")}</small>
+                        <span>|</span>
+                        <i class="fa-solid fa-calendar-days"></i><small>${date}</small>
+                    </div>
+                    <button class="read-more-btn" data-id="${p.id}">Read More</button>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    container.insertAdjacentHTML('beforeend', newPostsMarkup);
+    currentPostRenderIndex += postsToRender.length;
+
+    function generateVideoElement(videoUrl, positionStyle) {
+        const isYouTube = videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be");
+        const videoClasses = `media-video-element ${isYouTube ? 'youtube-iframe' : 'local-video'}`;
+        const finalStyle = `width:100%; height:100%; border-radius:10px; transition:0.4s; ${positionStyle}`;
+        const videoSrc = videoUrl.startsWith("http") ? videoUrl : `http://localhost:5000/${videoUrl}`;
+
+        if (isYouTube) {
+            let videoId = "";
+            try {
+                if (videoUrl.includes("youtube.com")) {
+                    const urlParams = new URLSearchParams(new URL(videoUrl).search);
+                    videoId = urlParams.get("v");
+                } else if (videoUrl.includes("youtu.be")) {
+                    videoId = videoUrl.split("/").pop();
+                }
+            } catch (e) {
+                console.error("Invalid video URL:", videoUrl);
+                videoId = "";
+            }
+            return `<iframe
+                class="${videoClasses}"
+                src="https://www.youtube.com/embed/${videoId}?rel=0&showinfo=0"
+                frameborder="0"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                style="${finalStyle}"
+            ></iframe>`; 
+        } else {
+            return `<video 
+                class="${videoClasses}"
+                src="${videoSrc}"
+                controls
+                style="width:100%; height:100%; object-fit:cover; border-radius:10px; ${finalStyle}"
+            ></video>`;
+        }
+    }
+
+    // --- Event Listeners ---
+    document.querySelectorAll(".read-more-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+          if (!token) {
+            window.location.href = "login.html";
+          } else {
+            const postId = btn.getAttribute("data-id");
+            window.location.href = `post.html?id=${postId}`;
+          }
+        });
+    });
+
+    document.querySelectorAll(".play-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const index = btn.getAttribute("data-post-index");
+            showVideo(index);
+        });
+    });
+
+    document.querySelectorAll(".back-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const index = btn.getAttribute("data-post-index");
+            showImage(index);
+        });
+    });
+}
+
+
+    // --- INFINITE SCROLL & INITIALIZATION ---
+
+    async function loadMorePosts() {
+      if (!hasMore || isLoading || searchInput.value.trim() !== "") return;
+      
+      const newPosts = await fetchPostsFromServer(currentPage, postsPerLoad);
+      if (newPosts.length > 0) {
+        renderPosts(newPosts, false);
+        currentPage++;
+      }
+    }
+
+    function handleScroll() {
+      const scrollTop = document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+      if (scrollTop + clientHeight >= scrollHeight - 100) {
+        loadMorePosts();
+      }
+    }
+    
+    function resetAndLoadPosts(resetCarousel = true) {
+      currentPage = 1;
+      isLoading = false;
+      hasMore = true;
+      allLoadedPosts = [];
+      currentPostRenderIndex = 0; // Reset the render index for unique IDs
+      container.innerHTML = "";
+      
+      if (resetCarousel) {
+          slider.innerHTML = "";
+          dotsContainer.innerHTML = "";
+          window.addEventListener('scroll', handleScroll);
+      }
+      
+      loader.style.display = "block";
+      noMorePostsMsg.style.display = "none";
+      
+      // Load first page
+      fetchPostsFromServer(1, postsPerLoad).then(posts => {
+          if(posts.length > 0) {
+              renderPosts(posts, false);
+              currentPage++;
+          }
+      });
+    }
+
+    homeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      resetAndLoadPosts(true);
+    });
+
+    blogsBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.location.href = "blogs.html";
+    });
+
+    window.addEventListener("load", () => {
+      resetAndLoadPosts(true);
+      setTimeout(() => {
+          if (document.documentElement.scrollHeight <= document.documentElement.clientHeight) {
+            loadMorePosts();
+          }
+      }, 500);
+    });
+    
+    /* ---------------------------------------------------------------------------------- */
+    /* ------------------ CAROUSEL JS --------------------------------------------------- */
+    /* ---------------------------------------------------------------------------------- */
+
+    let cards = [];
+    let totalCards = 0;
+    let cardWidth = 0;
+    let dots = [];
+    let allCards = [];
+    let centerX = window.innerWidth / 2;
+    let currentIndex = 0;
+    let intervalId = null;
+
+    function initCarousel(posts) {
+        if (intervalId) clearInterval(intervalId);
+        slider.innerHTML = '';
+        dotsContainer.innerHTML = '';
+
+        // --- 1. Prepare for Sorting and Filtering ---
+        const preparedPosts = posts.map(p => ({
+            ...p,
+            likes: parseInt(p.likes) || 0,
+            comments: parseInt(p.comments) || 0,
+            engagementScore: (parseInt(p.likes) || 0) + (parseInt(p.comments) || 0)
+        }));
+
+        let bannerPosts = [];
+        const engagedPosts = preparedPosts.filter(p => p.engagementScore > 0);
+
+        if (engagedPosts.length > 0) {
+            // Case A: Engagement Exists (PRIORITY 1)
+            bannerPosts = engagedPosts
+                .sort((a, b) => {
+                    if (b.likes !== a.likes) { return b.likes - a.likes; }
+                    return b.comments - a.comments;
+                })
+                .slice(0, 10);
+        } else {
+            // Case B: No Engagement Yet (FALLBACK)
+            bannerPosts = preparedPosts
+                .sort((a, b) => {
+                    return b.id - a.id;
+                })
+                .slice(0, 10);
+        }
+        
+        if (bannerPosts.length === 0) {
+             slider.innerHTML = '<div style="padding:40px; text-align:center; width: 100%;">No posts available to display in the banner.</div>';
+             return;
+        }
+        
+        // --- 2. Generate Banner Post Cards ---
+        
+        bannerPosts.forEach(post => {
+            const card = document.createElement('a');
+            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+            card.href = token ? `post.html?id=${post.id}` : "login.html"; 
+            card.className = 'card';
+            
+            const postHasImage = post.image && post.image.trim() !== "" && post.image.toLowerCase() !== "uploads/no-image.png";
+            const imagePath = postHasImage 
+                ? (post.image.startsWith("http") ? post.image : `http://localhost:5000/${post.image}`)
+                : 'https://via.placeholder.com/900/600?text=Hot+Post'; // Default fallback for banner
+
+            const date = new Date(post.created_at || Date.now()).toLocaleDateString(
+                undefined,
+                { year: "numeric", month: "short", day: "numeric" }
+            );
+
+            card.innerHTML = `
+                <img src="${imagePath}" alt="${escapeHtml(post.title || 'Hot Post')}">
+                <div class="content">
+                    <h2>${escapeHtml(post.title || 'Untitled Banner Post')}</h2>
+                    
+                    <div class="meta" style="margin-bottom: 15px;"> 
+                        <i class="fa-solid fa-user"></i><small>${escapeHtml(post.username || "Anonymous")}</small>
+                        <span style="margin: 0 5px;">|</span>
+                        <i class="fa-solid fa-calendar-days"></i><small>${date}</small>
+                    </div>
+
+                    <div class="stats">
+                        <span><i class="fa-solid fa-thumbs-up"></i> ${post.likes}</span>
+                        <span><i class="fa-solid fa-comment-dots"></i> ${post.comments}</span>
+                    </div>
+                </div>
+            `;
+            slider.appendChild(card);
+            
+            card.addEventListener('click', (e) => {
+              const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+              if (!token) {
+                e.preventDefault();
+                window.location.href = "login.html";
+              }
+            });
+        });
+        
+        // --- 3. Initialize Carousel Animation ---
+
+        cards = [...slider.children];
+        totalCards = cards.length;
+        if (totalCards === 0) return; 
+
+        for (let i = 0; i < totalCards; i++) {
+          const dot = document.createElement("div");
+          dot.className = "dot";
+          dotsContainer.appendChild(dot);
+        }
+        dots = [...dotsContainer.children];
+
+        cards.forEach(card => slider.appendChild(card.cloneNode(true)));
+        cards.forEach(card => slider.appendChild(card.cloneNode(true)));
+
+        allCards = [...slider.children];
+        currentIndex = totalCards; 
+
+        setTimeout(() => {
+            if (cards[0]) {
+                cardWidth = cards[0].offsetWidth + 30; 
+                slider.scrollTo({ left: cardWidth * currentIndex, behavior: 'instant' });
+                updateScale(); 
+                slider.addEventListener('scroll', updateScale);
+                
+                intervalId = setInterval(scrollNext, 2500);
+            }
+        }, 300); 
+
+    } 
+
+    function updateScale() {
+        let activeRealIndex = -1;
+        allCards.forEach((card, i) => {
+            const rect = card.getBoundingClientRect();
+            const cardCenter = rect.left + rect.width / 2;
+            const dist = Math.abs(centerX - cardCenter);
+            const scale = 1.1 - Math.min(dist / centerX, 1) * 0.25;
+            card.style.transform = `scale(${scale})`;
+            if (scale > 1.05) {
+                card.classList.add("active");
+                let index = i % totalCards;
+                activeRealIndex = index;
+            } else {
+                card.classList.remove("active");
+            }
+        });
+        dots.forEach(dot => dot.classList.remove("active"));
+        if (activeRealIndex >= 0 && activeRealIndex < totalCards) dots[activeRealIndex].classList.add("active");
+    }
+
+    function scrollNext() {
+        currentIndex++;
+        slider.scrollTo({ left: cardWidth * currentIndex, behavior: 'smooth' });
+        if (currentIndex >= totalCards * 2) {
+            currentIndex = totalCards;
+            setTimeout(() => {
+                slider.scrollTo({ left: cardWidth * currentIndex, behavior: 'instant' });
+            }, 300);
+        }
+    }
+    
+    window.addEventListener('resize', () => {
+        centerX = window.innerWidth / 2;
+        updateScale();
+    });
+
+  </script>
+
+</body>
+</html>

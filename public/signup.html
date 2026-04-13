@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - Cosmo Blog</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+  <link rel="shortcut icon" href="logo.png" type="image/png">
+
+
+  <style>
+    body {
+      margin: 0; 
+      font-family: 'Segoe UI', sans-serif;
+      background: #b3d4fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    /* Left Lottie animations container */
+    .animation-container {
+      flex: 1;
+      max-width: 500px;
+      position: relative;
+      height: 500px;
+    }
+
+    .animation-container iframe {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: none;
+      top: 0;
+      left: 0;
+    }
+
+    .lottie1 {
+      z-index: 2;
+      opacity: 1;
+      animation: fade1 10s infinite;
+    }
+
+    @keyframes fade1 {
+      0%, 45% { opacity: 1; }
+      50%, 100% { opacity: 0; } 
+    }
+
+    .lottie2 {
+      z-index: 1;
+      opacity: 0;
+      animation: fade2 10s infinite;
+    }
+
+    @keyframes fade2 {
+      0%, 45% { opacity: 0; }
+      50%, 100% { opacity: 1; }
+    }
+
+    /* Sign-up box */
+    .box {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      padding: 50px;
+      border-radius: 15px;
+      max-width: 500px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-size: 24px;
+    }
+
+    input, button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    button {
+      background: #2196f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1976d2;
+    }
+
+    a {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+      text-decoration: none;
+      color: black;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    /* 🔴 Shake + red border animation */
+    .error-input {
+      border-color: red !important;
+      animation: shake 0.3s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Lottie Animations -->
+    <div class="animation-container">
+      <iframe class="lottie1" src="https://lottie.host/embed/c3b050c1-8bc4-4f35-87d0-be708cb8af6f/MjeaFjCCdo.lottie" allowfullscreen></iframe>
+      <iframe class="lottie2" src="https://lottie.host/embed/3f234ed8-e9b0-4c31-bb7b-e79592ec83ea/eIZoZeFSmU.lottie" allowfullscreen></iframe>
+    </div>
+
+    <!-- Sign Up Box -->
+    <div class="box">
+      <h2>Create Account</h2>
+      <form id="signupForm">
+        <input 
+          type="text" 
+          id="username" 
+          placeholder="Username" 
+          required 
+          pattern="^[A-Za-z\s]+$" 
+          title="Only letters and spaces are allowed"
+        />
+
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+
+        <button type="submit">Sign Up</button>
+      </form>
+      <p id="message"></p>
+      <a href="login.html">Already have an account? Login</a>
+    </div>
+  </div>
+
+<script>
+  document.getElementById("signupForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+    const message = document.getElementById("message");
+    const passwordInput = document.getElementById("password");
+    const confirmInput = document.getElementById("confirmPassword");
+
+    // Basic client-side validation
+    const namePattern = /^[A-Za-z\s]+$/;
+    if (!namePattern.test(username)) {
+      message.textContent = "Full name should contain only letters.";
+      message.style.color = "red";
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      message.textContent = "Please enter a valid email address.";
+      message.style.color = "red";
+      return;
+    }
+
+    if (password.length < 6) {
+      message.textContent = "Password must be at least 6 characters long.";
+      message.style.color = "red";
+      return;
+    }
+
+    // ✅ Confirm Password Validation with effect
+    if (password !== confirmPassword) {
+      message.textContent = "Passwords do not match.";
+      message.style.color = "red";
+
+      passwordInput.classList.add("error-input");
+      confirmInput.classList.add("error-input");
+
+      setTimeout(() => {
+        passwordInput.classList.remove("error-input");
+        confirmInput.classList.remove("error-input");
+      }, 1000);
+
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("Server returned invalid response");
+      }
+
+      message.textContent = data.message || data.error || "Unexpected response";
+      message.style.color = res.ok ? "green" : "red";
+
+      if (res.ok && data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("username", username);
+        localStorage.setItem("isLoggedIn", "true");
+        window.location.href = "dashboard.html";
+      }
+
+    } catch (err) {
+      console.error("Signup error:", err);
+      message.textContent = "Unable to sign up. Please try again.";
+      message.style.color = "red";
+    }
+  });
+</script>
+
+</body>
+</html>

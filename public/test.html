@@ -1,0 +1,325 @@
+<!-- CHANNEL PAGE -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominic - UI/UX & Brand Designer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&family=Playfair+Display:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        :root {
+            --dark-text: #1a1a1a;
+            --light-text: #666;
+            --primary-bg: #fcfcfc; 
+            --white-bg: #ffffff;
+            --accent-color: #000; 
+            --soft-gray: #f0f0f0;
+            --font-main: 'Inter', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--dark-text);
+            line-height: 1.7;
+            background-color: var(--primary-bg);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* --- Navigation --- */
+        .top-bar {
+            padding: 30px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-name {
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .logo-name::after {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+
+        /* --- Hero Section --- */
+        .hero-section {
+            display: flex;
+            align-items: center;
+            min-height: 85vh;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #fff 0%, #f9f9f9 100%);
+            border-radius: 0 0 80px 80px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.02);
+        }
+        
+        .hero-content {
+            flex: 1.2;
+            padding-right: 40px;
+        }
+
+        .greeting {
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: var(--light-text);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .hero-content h1 {
+            font-size: 5rem;
+            line-height: 0.9;
+            margin-bottom: 25px;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+
+        .hero-content h1 span {
+            font-family: var(--font-serif);
+            font-weight: 400;
+            font-style: italic;
+            color: var(--light-text);
+            font-size: 0.9em;
+            letter-spacing: 0;
+        }
+
+        .description {
+            max-width: 480px;
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .cta-button {
+            background-color: var(--accent-color);
+            color: #fff;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            background-color: #333;
+        }
+
+        .hero-image-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .hero-image-container img {
+            width: 100%;
+            height: 600px;
+            object-fit: cover;
+            border-radius: 50%;
+            filter: grayscale(10%) contrast(105%);
+            box-shadow: 25px 25px 0px var(--soft-gray);
+        }
+
+        /* --- Value Propositions --- */
+        .value-propositions {
+            padding: 100px 0;
+        }
+
+        .propositions-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .prop-card {
+            padding: 40px;
+            background: white;
+            border-radius: 24px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .prop-card:hover {
+            border-color: #eee;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+        }
+
+        .prop-card h3 {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .prop-card p {
+            font-size: 0.95rem;
+            color: var(--light-text);
+            font-weight: 300;
+        }
+
+        /* --- Trusted By --- */
+        .trusted-by {
+            background-color: var(--white-bg);
+            padding: 100px 0;
+            border-radius: 80px 80px 0 0;
+        }
+
+        .trusted-by-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .trusted-by-header h2 {
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            color: var(--light-text);
+        }
+
+        .partner-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid #f0f0f0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .partner-logo-cell {
+            padding: 50px 20px;
+            text-align: center;
+            border: 0.5px solid #f6f6f6;
+            transition: background 0.3s ease;
+            font-weight: 700;
+            color: #bbb;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .partner-logo-cell:hover {
+            background: #fafafa;
+            color: #000;
+        }
+
+        .partner-logo-cell i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 992px) {
+            .hero-section { flex-direction: column; text-align: center; border-radius: 0 0 40px 40px; }
+            .hero-content { padding-right: 0; margin-bottom: 60px; }
+            .hero-content h1 { font-size: 3.5rem; }
+            .hero-image-container img { height: 400px; border-radius: 30px; box-shadow: none; }
+            .description { margin: 0 auto 40px; }
+            .partner-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="container top-bar">
+        <div class="logo-name">Dominic</div>
+        <div class="menu-dots"><i class="fas fa-ellipsis-h"></i></div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container hero-content">
+            <p class="greeting">Available for freelance</p>
+            <h1>
+                A UI/UX <br>
+                <span>& Brand</span> <br>
+                DESIGNER
+            </h1>
+            <p class="description">
+                Crafting digital experiences that merge functional minimalism with emotional impact. Based in the heart of design.
+            </p>
+            <button class="cta-button">
+                START A PROJECT <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <div class="container hero-image-container">
+            <img src="https://www.gousa.study/images/masters-in-ui-ux-interaction-design-usa.jpg" alt="Dominic Portrait">
+        </div>
+    </section>
+
+    <section class="value-propositions">
+        <div class="container propositions-wrapper">
+            <div class="prop-card">
+                <h3>01. STRATEGY</h3>
+                <p>Intuitive and engaging experiences tailored for your specific target audience.</p>
+            </div>
+            <div class="prop-card">
+                <h3>02. IDENTITY</h3>
+                <p>Strong visual storytelling that makes your brand unforgettable in a crowded market.</p>
+            </div>
+            <div class="prop-card">
+                <h3>03. INTERFACE</h3>
+                <p>Pixel-perfect designs optimized for all devices with a focus on usability.</p>
+            </div>
+            <div class="prop-card">
+                <h3>04. MOTION</h3>
+                <p>Interactive mockups and seamless transitions to guide efficient development.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="trusted-by">
+        <div class="container">
+            <div class="trusted-by-header">
+                <h2>PREVIOUS COLLABORATIONS</h2>
+                <p style="color:#999; font-weight: 300;">Selected brands and startups I've helped grow.</p>
+            </div>
+            <div class="partner-grid">
+                <div class="partner-logo-cell"><i class="fab fa-apple"></i> Frame Blox</div>
+                <div class="partner-logo-cell"><i class="fab fa-stripe"></i> Supa Blox</div>
+                <div class="partner-logo-cell"><i class="fas fa-bolt"></i> Hype Blox</div>
+                <div class="partner-logo-cell"><i class="fab fa-intercom"></i> Ultra Blox</div>
+                <div class="partner-logo-cell"><i class="fas fa-rocket"></i> Ship Blox</div>
+                <div class="partner-logo-cell"><i class="fab fa-figma"></i> Design Blox</div>
+                <div class="partner-logo-cell"><i class="fab fa-slack"></i> Team Blox</div>
+                <div class="partner-logo-cell"><i class="fas fa-shield-alt"></i> Shift Blox</div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

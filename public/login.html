@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Cosmo Blog</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+  <link rel="shortcut icon" href="logo.png" type="image/png">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #b3d4fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 1300px;
+    }
+
+    /* Left Lottie animations container */
+    .animation-container {
+      flex: 1;
+      max-width: 550px;
+      position: relative;
+      height: 520px;
+    }
+
+    .animation-container iframe {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: none;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .lottie1 {
+      transform: scale(1.25);
+      top: -40px;
+      left: -20px;
+      z-index: 2;
+      animation: fade1 10s infinite ease-in-out;
+    }
+
+    @keyframes fade1 {
+      0%, 40% { opacity: 1; }
+      50%, 100% { opacity: 0; } 
+    }
+
+    .lottie2 {
+      z-index: 1;
+      transform: scale(1.05);
+      animation: fade2 10s infinite ease-in-out;
+    }
+
+    @keyframes fade2 {
+      0%, 40% { opacity: 0; }
+      50%, 90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Login box */
+    .box {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(12px);
+      padding: 80px 70px;
+      border-radius: 25px;
+      max-width: 600px;
+      min-height: 500px;
+      text-align: center;
+      box-sizing: border-box;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease;
+    }
+
+    .box:hover {
+      transform: translateY(-5px);
+    }
+
+    h2 {
+      margin-bottom: 45px;
+      font-size: 32px;
+      color: #1a1a1a;
+      font-weight: 700;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      margin-bottom: 25px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 18px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      margin-top: 5px;
+      border-radius: 12px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    button:hover {
+      background: #1976d2;
+      transform: scale(1.03);
+    }
+
+    a {
+      display: block;
+      margin-top: 20px;
+      font-size: 16px;
+      text-decoration: none;
+      color: black;
+      transition: color 0.3s;
+    }
+
+    a:hover {
+      color: #1976d2;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .animation-container {
+        height: 320px;
+        max-width: 100%;
+      }
+      .box {
+        max-width: 90%;
+        margin-top: 20px;
+        padding: 50px 25px;
+        min-height: auto;
+      }
+      input, button {
+        font-size: 16px;
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body> 
+
+  <div class="container">
+    <!-- Lottie Animations -->
+    <div class="animation-container">
+      <iframe class="lottie1" src="https://lottie.host/embed/a4c7dc24-0c0f-4214-ade9-0188523da232/JA6wv5S2rc.lottie" allowfullscreen></iframe>
+      <iframe class="lottie2" src="https://lottie.host/embed/c3b050c1-8bc4-4f35-87d0-be708cb8af6f/MjeaFjCCdo.lottie" allowfullscreen></iframe>
+    </div>
+
+    <!-- Login Box -->
+    <div class="box">
+      <h2>Login to Cosmo Blog</h2>
+      <form id="loginForm">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <p id="message"></p>
+      <a href="signup.html">Don’t have an account? Sign up</a>
+    </div>
+  </div>
+
+  <script>
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  try {
+    const res = await fetch("http://localhost:5000/api/login", { // ✅ fixed port 5000
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+    document.getElementById("message").textContent = data.message || data.error;
+
+    if (res.ok && data.token) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("userId", data.user?.id || data.id); // ✅ store user ID too
+      console.log("Logged in user ID:", data.user?.id || data.id);
+      window.location.href = "all-posts.html"; // ✅ redirect to posts
+    }
+  } catch (err) {
+    document.getElementById("message").textContent = "⚠️ Error logging in";
+  }
+});
+</script>
+
+
+
+
+</body>
+</html>

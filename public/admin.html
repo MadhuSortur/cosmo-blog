@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmo Blog - Admin Panel</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        /* General Setup */
+        :root {
+            --text-dark: #fff;
+            --bg-dark-1: #0f172a;
+            --accent: #00c6ff;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --danger: #f44336;
+            --success: #4caf50;
+            --warning: #ff9800;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:"Poppins", sans-serif; }
+
+        body { 
+            background: var(--bg-dark-1); 
+            color: var(--text-dark); 
+            padding: 20px; 
+            min-height: 100vh;
+        }
+
+        /* Container and Headings */
+        .admin-container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+
+        h1 { 
+            font-size: 2rem; 
+            margin-bottom: 20px; 
+            color: var(--accent); 
+        }
+
+        h2 { 
+            border-bottom: 2px solid var(--accent); 
+            padding-bottom: 10px; 
+            margin-top: 30px;
+            margin-bottom: 20px; 
+            color: var(--accent); 
+            font-size: 1.5rem;
+        }
+        
+        /* Navigation (for future tabs) */
+        nav a { 
+            color: var(--accent); 
+            text-decoration: none; 
+            margin-right: 15px; 
+            font-weight: 500; 
+        }
+        nav a:hover { 
+            text-decoration: underline; 
+        }
+        
+        /* Post List Grid */
+        .post-list { 
+            display: grid; 
+            gap: 20px; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+        }
+
+        /* Post Card Styling (Rejected) */
+        .pending-post-card { 
+            background: var(--card-bg); 
+            padding: 15px; 
+            border-radius: 8px; 
+            border-left: 5px solid var(--danger); /* Red for rejected */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .pending-post-card h4 { 
+            font-size: 1.1rem; 
+            margin-bottom: 8px; 
+            color: var(--accent);
+        }
+
+        .post-meta { 
+            font-size: 0.85rem; 
+            color: #ccc; 
+            margin-bottom: 10px; 
+        }
+
+        /* Content Display */
+        .post-body { 
+            background: rgba(0, 0, 0, 0.2); 
+            padding: 10px; 
+            border-radius: 4px; 
+            max-height: 150px; 
+            overflow-y: auto; 
+            white-space: pre-wrap; 
+            margin-bottom: 15px; 
+            font-size: 0.9rem;
+        }
+        
+        /* AI Verdict */
+        .ai-verdict {
+            color: var(--warning);
+            font-weight: bold;
+            margin: 10px 0;
+            font-size: 0.95rem;
+        }
+
+        /* Action Buttons */
+        .actions button { 
+            padding: 8px 15px; 
+            border: none; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            margin-right: 10px; 
+            transition: 0.2s; 
+            font-size: 0.9rem;
+        }
+
+        .approve { 
+            background: var(--success); 
+            color: white; 
+        }
+        .approve:hover { 
+            background: #66bb6a; 
+        }
+        
+        .view-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Messages */
+        #adminMessage { 
+            text-align: center; 
+            color: var(--warning); 
+            margin-top: 40px; 
+            font-size: 1.2rem; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <h1><i class="fa-solid fa-shield-halved"></i> Cosmo Blog Admin Moderation</h1>
+        
+        <nav style="margin-bottom: 20px;">
+            <a href="#" onclick="loadRejectedPosts()" style="color: var(--accent);">Rejected Posts Review</a> 
+        </nav>
+
+        <h2>Posts Automatically Rejected by AI</h2>
+        <div id="adminMessage">Loading posts...</div>
+        <div id="pendingPostList" class="post-list">
+            </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // **IMPORTANT: Ensure this base URL matches your server's admin API endpoint.**
+        const API_BASE = "http://localhost:5000/api/admin"; 
+        
+        // --- DOM ELEMENTS ---
+        const pendingPostList = document.getElementById('pendingPostList');
+        const adminMessage = document.getElementById('adminMessage');
+        
+        // --- UTILITIES ---
+
+        function getToken() {
+            // Retrieves the authentication token for admin requests
+            return localStorage.getItem("token") || sessionStorage.getItem("token");
+        }
+
+        async function checkAdminAuth() {
+            const token = getToken();
+            if (!token) {
+                alert("Access Denied. Please log in as an administrator.");
+                window.location.href = "login.html";
+                return false;
+            }
+            
+            // **TODO: Implement a server-side check here to verify the token and admin role.**
+            // This client-side check is a placeholder for the actual security required.
+            
+            return true;
+        }
+
+        // --- FETCH & RENDER REJECTED POSTS ---
+
+        async function loadRejectedPosts() { 
+            if (!await checkAdminAuth()) return;
+            adminMessage.textContent = "Fetching automatically rejected posts...";
+            pendingPostList.innerHTML = "";
+            
+            try {
+                const token = getToken();
+                // Assumes your server has an endpoint to get posts with status 'rejected'
+                const res = await fetch(`${API_BASE}/posts/rejected`, { 
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.status === 403) {
+                     throw new Error("Authorization failed. Not an admin.");
+                }
+                if (!res.ok) { throw new Error('Failed to fetch rejected posts.'); }
+
+                const posts = await res.json();
+                renderRejectedPosts(posts);
+
+            } catch (error) {
+                console.error("Moderation fetch error:", error);
+                adminMessage.textContent = `Error: ${error.message}. Ensure your server is running and the Admin endpoint is correct.`;
+            }
+        }
+
+        function renderRejectedPosts(posts) { 
+            pendingPostList.innerHTML = '';
+            if (posts.length === 0) {
+                adminMessage.textContent = "👍 No posts currently auto-rejected. System is clean!";
+                return;
+            }
+            adminMessage.textContent = "Review auto-rejected posts (You can override the AI decision):";
+
+            const markup = posts.map(p => {
+                const date = new Date(p.created_at).toLocaleDateString();
+                
+                // Safely parse AI verdict data
+                let aiData = { reason: "UNKNOWN", score: "N/A" };
+                try {
+                    if (p.ai_verdict) {
+                        const parsedVerdict = JSON.parse(p.ai_verdict);
+                        aiData.reason = parsedVerdict.unsafe_category || 'Toxicity';
+                        // Assuming the score is stored as a decimal (0.0 to 1.0) under 'toxicity'
+                        const scoreValue = parsedVerdict.toxicity || 0; 
+                        aiData.score = (scoreValue * 100).toFixed(2);
+                    }
+                } catch (e) {
+                    console.error("Failed to parse AI verdict JSON:", p.ai_verdict, e);
+                }
+
+                return `
+                    <div class="pending-post-card" data-id="${p.id}">
+                        <h4>${p.title}</h4>
+                        <div class="post-meta">
+                            By: ${p.username} | Status: **${p.status.toUpperCase()}** | Date: ${date}
+                        </div>
+                        <p class="ai-verdict">
+                            <i class="fa-solid fa-robot"></i> AI REJECTION: ${aiData.reason} (${aiData.score}% Confidence)
+                        </p>
+                        <div class="post-body">${p.description || (p.content ? p.content.substring(0, 200) + '...' : 'No content available')}</div>
+                        <div class="actions">
+                            <button class="approve" data-id="${p.id}">Manually Approve (Override)</button>
+                            <a href="post.html?id=${p.id}" target="_blank" class="view-link"><i class="fa-solid fa-eye"></i> View Post</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            pendingPostList.innerHTML = markup;
+
+            // Attach event listeners for the override button
+            document.querySelectorAll('.approve').forEach(btn => btn.addEventListener('click', handleAction));
+        }
+
+        // --- ACTION HANDLER (MANUAL APPROVE/OVERRIDE) ---
+
+        async function handleAction(event) {
+            if (!await checkAdminAuth()) return;
+
+            const postId = event.target.getAttribute('data-id');
+            const actionType = 'approve'; // The only action here is to override/approve
+            
+            if (!confirm(`Are you sure you want to MANUALLY APPROVE (override AI) post ID ${postId}? This will make it publicly visible.`)) {
+                return;
+            }
+
+            try {
+                const token = getToken();
+                // Assumes your server has a PUT /api/admin/posts/:id/approve endpoint
+                const res = await fetch(`${API_BASE}/posts/${postId}/${actionType}`, { 
+                    method: 'PUT',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (res.status === 403) {
+                     throw new Error("Authorization failed. Not an admin.");
+                }
+
+                if (!res.ok) { throw new Error(`Failed to manually approve post.`); }
+
+                alert(`Post ID ${postId} successfully manually approved (AI decision overridden).`);
+                loadRejectedPosts(); // Reload the list
+
+            } catch (error) {
+                console.error(`Error performing override:`, error);
+                alert(`Failed to perform action: ${error.message}`);
+            }
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = loadRejectedPosts;
+    </script>
+
+</body>
+</html>

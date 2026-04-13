@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Overview Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        :root {
+            --primary-blue: #0d47a1;
+            --accent-indigo: #3b82f6;
+            --text-growth-up: #10b981;
+            --text-growth-down: #ef4444;
+            --card-bg-white: #ffffff;
+        }
+        .text-primary-blue { color: var(--primary-blue); }
+        .bg-primary-blue { background-color: var(--primary-blue); }
+        .bg-blue-100-custom { background-color: #e3f2fd; }
+        .text-growth-up { color: var(--text-growth-up); }
+        .text-growth-down { color: var(--text-growth-down); }
+
+        .trend-card {
+            background-color: var(--card-bg-white);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 20rem;
+        }
+
+        .chart-container-lg {
+            flex-grow: 1;
+            height: 100%;
+            padding: 0.5rem;
+        }
+
+        .header-nav-link {
+            padding: 0.25rem 0.5rem;
+            margin-left: 1rem;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .header-nav-link.active {
+            color: var(--primary-blue);
+            font-weight: bold;
+            border-bottom: 3px solid var(--primary-blue);
+        }
+
+        .hero-section {
+            height: 200px;
+            background-image: url('https://images.unsplash.com/photo-1542435503-921c583713f0?fit=crop&w=1600&h=400&q=80'); 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .glassmorphic-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem 2.5rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            background-image: url('https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTBMoyX371JEja2TQeX75Qz9KeSnU0nB8tTM1r0kCfqClEtC352');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            font-family: sans-serif;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+
+        main { position: relative; z-index: 1; }
+    </style>
+</head>
+<body class="font-sans">
+
+<header class="bg-white shadow sticky top-0 z-50">
+    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-primary-blue">ANALYTICS OVERVIEW</h1>
+        <nav>
+            <div class="flex items-center space-x-2">
+                <a href="all-posts.html" class="header-nav-link active">
+                    <i class="fas fa-chart-line mr-1"></i><span>Home</span>
+                </a>
+                <a href="blogs.html" class="header-nav-link text-gray-700 hover:text-primary-blue">
+                    <i class="fas fa-file-alt mr-1"></i><span>Blogs</span>
+                </a>
+                <a href="profile.html" class="header-nav-link text-gray-700 hover:text-primary-blue">
+                    <i class="fas fa-users mr-1"></i><span>Profile</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div class="hero-section">
+    <div class="relative z-10 text-center glassmorphic-box">
+        <h2 class="text-4xl font-extrabold tracking-tight">DATA DRIVEN GROWTH</h2>
+        <p class="mt-2 text-xl font-medium opacity-90">Deep insights for maximizing your content performance.</p>
+    </div>
+</div>
+
+<div class="flex">
+    <main class="flex-1 p-6 md:p-8 w-full">
+        <h2 class="text-3xl font-bold mb-8 text-white">Key Metrics</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium uppercase">Views</p>
+                        <div class="flex items-baseline mt-1">
+                            <p class="text-3xl font-bold text-gray-900" id="metric-views-value">---</p>
+                            <span class="ml-2 text-sm font-semibold" id="metric-views-change"></span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-100-custom p-3 rounded-full">
+                        <i class="fas fa-eye text-primary-blue text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium uppercase">Likes</p>
+                        <div class="flex items-baseline mt-1">
+                            <p class="text-3xl font-bold text-gray-900" id="metric-likes-value">---</p>
+                            <span class="ml-2 text-sm font-semibold" id="metric-likes-change"></span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-100-custom p-3 rounded-full">
+                        <i class="fas fa-heart text-primary-blue text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium uppercase">Comments</p>
+                        <div class="flex items-baseline mt-1">
+                            <p class="text-3xl font-bold text-gray-900" id="metric-comments-value">---</p>
+                            <span class="ml-2 text-sm font-semibold" id="metric-comments-change"></span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-100-custom p-3 rounded-full">
+                        <i class="fas fa-comment-alt text-primary-blue text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium uppercase">Avg. Read Time</p>
+                        <div class="flex items-baseline mt-1">
+                            <p class="text-3xl font-bold text-gray-900" id="metric-readtime-value">---</p>
+                            <span class="ml-2 text-sm font-semibold" id="metric-readtime-change"></span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-100-custom p-3 rounded-full">
+                        <i class="fas fa-book-reader text-primary-blue text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium uppercase">Bounce Rate</p>
+                        <div class="flex items-baseline mt-1">
+                            <p class="text-3xl font-bold text-gray-900" id="metric-bounce-value">---</p>
+                            <span class="ml-2 text-sm font-semibold" id="metric-bounce-change"></span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-100-custom p-3 rounded-full">
+                        <i class="fas fa-sign-out-alt text-primary-blue text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium uppercase">Posts</p>
+                        <div class="flex items-baseline mt-1">
+                            <p class="text-3xl font-bold text-gray-900" id="metric-posts-value">---</p>
+                        </div>
+                    </div>
+                    <div class="bg-blue-100-custom p-3 rounded-full">
+                        <i class="fas fa-file-alt text-primary-blue text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-lg border border-gray-200 flex flex-col items-center">
+                <h3 class="text-lg font-semibold mb-6 text-gray-800">Key Metric Contribution Score (%)</h3>
+                <div class="flex justify-center items-stretch w-full max-w-xl space-x-24">
+                    <div class="w-full max-w-[16rem] h-64 flex items-center justify-center flex-shrink-0">
+                        <canvas id="engagementDoughnutChart"></canvas>
+                    </div>
+                    <div id="chartLegend" class="flex flex-col h-64 justify-between flex-grow max-w-[50%]"></div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold mt-8 mb-6 text-white">Performance</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="trend-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="text-sm font-semibold text-gray-800">Views</h4>
+                    <select class="text-xs border border-gray-300 rounded-md p-1" onchange="updateChart('views', this.value)">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                    </select>
+                </div>
+                <div class="chart-container-lg"><canvas id="viewsLineChart"></canvas></div>
+                <p class="text-xs text-gray-600 mt-auto pt-2" id="views-description"></p>
+            </div>
+            <div class="trend-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="text-sm font-semibold text-gray-800">Posts</h4>
+                    <select class="text-xs border border-gray-300 rounded-md p-1" onchange="updateChart('posts', this.value)">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                    </select>
+                </div>
+                <div class="chart-container-lg"><canvas id="postsLineChart"></canvas></div>
+                <p class="text-xs text-gray-600 mt-auto pt-2" id="posts-description"></p>
+            </div>
+            <div class="trend-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="text-sm font-semibold text-gray-800">Likes</h4>
+                    <select class="text-xs border border-gray-300 rounded-md p-1" onchange="updateChart('likes', this.value)">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                    </select>
+                </div>
+                <div class="chart-container-lg"><canvas id="likesLineChart"></canvas></div>
+                <p class="text-xs text-gray-600 mt-auto pt-2" id="likes-description"></p>
+            </div>
+            <div class="trend-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="text-sm font-semibold text-gray-800">Bounce Rate</h4>
+                    <select class="text-xs border border-gray-300 rounded-md p-1" onchange="updateChart('bounce', this.value)">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                    </select>
+                </div>
+                <div class="chart-container-lg"><canvas id="bounceLineChart"></canvas></div>
+                <p class="text-xs text-gray-600 mt-auto pt-2" id="bounce-description"></p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            <div class="trend-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="text-sm font-semibold text-gray-800">Comments</h4>
+                    <select class="text-xs border border-gray-300 rounded-md p-1" onchange="updateChart('comments', this.value)">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                    </select>
+                </div>
+                <div class="chart-container-lg"><canvas id="commentsLineChart"></canvas></div>
+                <p class="text-xs text-gray-600 mt-auto pt-2" id="comments-description"></p>
+            </div>
+            <div class="trend-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="text-sm font-semibold text-gray-800">Shares</h4>
+                    <select class="text-xs border border-gray-300 rounded-md p-1" onchange="updateChart('shares', this.value)">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                    </select>
+                </div>
+                <div class="chart-container-lg"><canvas id="sharesLineChart"></canvas></div>
+                <p class="text-xs text-gray-600 mt-auto pt-2" id="shares-description"></p>
+            </div>
+            <div class="trend-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="text-sm font-semibold text-gray-800">Avg Read Time</h4>
+                    <select class="text-xs border border-gray-300 rounded-md p-1" onchange="updateChart('readtime', this.value)">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                    </select>
+                </div>
+                <div class="chart-container-lg"><canvas id="readtimeLineChart"></canvas></div>
+                <p class="text-xs text-gray-600 mt-auto pt-2" id="readtime-description"></p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const BLUE_LINE_COLOR = '#3b82f6';
+    const TRANSPARENT_BLUE_FILL = 'rgba(59, 130, 246, 0.2)';
+    const charts = {}; // This global object stores our chart instances
+    let fetchedData = null;
+
+    // --- Session Analytics (Live Read Time / Bounce) ---
+    let pageEnterTime = Date.now();
+    const BOUNCE_THRESHOLD = 10;
+    window.addEventListener("beforeunload", () => {
+        const timeSpentSec = Math.round((Date.now() - pageEnterTime) / 1000);
+        const reads = JSON.parse(localStorage.getItem("readTimes") || "[]");
+        reads.push(timeSpentSec);
+        localStorage.setItem("readTimes", JSON.stringify(reads));
+        const visits = JSON.parse(localStorage.getItem("visits") || "[]");
+        visits.push(timeSpentSec < BOUNCE_THRESHOLD ? 1 : 0);
+        localStorage.setItem("visits", JSON.stringify(visits));
+    });
+
+    function getAvgReadTime() {
+        const reads = JSON.parse(localStorage.getItem("readTimes") || "[]");
+        if (reads.length === 0) return 0;
+        return +((reads.reduce((a, b) => a + b, 0) / reads.length) / 60).toFixed(2);
+    }
+
+    function getBounceRate() {
+        const visits = JSON.parse(localStorage.getItem("visits") || "[]");
+        if (visits.length === 0) return 0;
+        const bounces = visits.filter(v => v === 1).length;
+        return +(bounces / visits.length * 100).toFixed(1);
+    }
+
+    function todayLabel() {
+      return new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short'
+      });
+    }
+
+
+    // --- Data Processing ---
+    const calculateChange = (current, previous, isBounce = false) => {
+        if (previous === 0) return { value: "", class: "text-gray-500" };
+        let rawChange = ((current - previous) / previous) * 100;
+        let isPositiveTrend = isBounce ? rawChange < 0 : rawChange > 0;
+        const sign = isPositiveTrend ? '↑' : '↓';
+        return { value: `${sign} ${Math.abs(rawChange).toFixed(1)}%`, class: isPositiveTrend ? 'text-growth-up' : 'text-growth-down' };
+    };
+
+function normalizeData(apiData) {
+    // Copy existing monthly labels
+    let monthlyLabels = [...apiData.charts.posts.labels];
+
+    // Append Jan 7 and Jan 8 if not already present
+    const extraDates = ['07 Jan', '08 Jan'];
+    extraDates.forEach(date => {
+        if (!monthlyLabels.includes(date)) {
+            monthlyLabels.push(date);
+            apiData.charts.posts.data.push(0);
+            apiData.charts.likes.data.push(0);
+            apiData.charts.comments.data.push(0);
+        }
+    });
+
+    const dataLength = monthlyLabels.length;
+
+    const bounceData = Array.from({ length: dataLength }, () =>
+        +(Math.random() * 10).toFixed(1)
+    );
+
+    const readtimeData = Array.from({ length: dataLength }, () =>
+        +(Math.random() * 5 + 1).toFixed(2)
+    );
+
+    return {
+        monthly: {
+            labels: monthlyLabels,
+            views: apiData.charts.posts.data.slice(-dataLength),
+            posts: apiData.charts.posts.data.slice(-dataLength),
+            likes: apiData.charts.likes.data.slice(-dataLength),
+            comments: apiData.charts.comments.data.slice(-dataLength),
+            shares: Array(dataLength).fill(0),
+            bounce: bounceData,
+            readtime: readtimeData
+        },
+        weekly: {
+            labels: getLastNDates(7),
+            views: apiData.charts.posts.data.slice(-7),
+            posts: apiData.charts.posts.data.slice(-7),
+            likes: apiData.charts.likes.data.slice(-7),
+            comments: apiData.charts.comments.data.slice(-7),
+            shares: Array(7).fill(0),
+            bounce: bounceData.slice(-7),
+            readtime: readtimeData.slice(-7)
+        },
+        totalViews: { n: apiData.totals.views || 0 },
+        totalLikes: { n: apiData.totals.likes || 0 },
+        totalComments: { n: apiData.totals.comments || 0 },
+        totalPosts: { n: apiData.totals.posts || 0 }
+    };
+}
+
+
+    // --- Chart Core Logic ---
+const miniLineChartOptions = (metric) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { 
+        duration: 1000, 
+        easing: 'easeInOutQuart' 
+    },
+    plugins: { 
+        legend: { display: false }, 
+        tooltip: { enabled: true, mode: 'index', intersect: false } 
+    },
+    scales: {
+        x: { 
+            grid: { display: false }, 
+            ticks: { 
+                font: { size: 9 },
+                autoSkip: true,   // Automatically hides overlapping labels
+                maxTicksLimit: 7  // Keeps the UI clean even in Monthly view
+            } 
+        },
+        y: { 
+            beginAtZero: true, 
+            ticks: { font: { size: 10 } } 
+        }
+    },
+    elements: { 
+        line: { tension: 0.4, borderWidth: 2 }, 
+        point: { radius: 2 } 
+    }
+});
+
+    /**
+     * Restoration of the smooth update logic
+     */
+function initializeChart(chartId, metric, timePeriod) {
+    if (!fetchedData) return;
+
+    const data = fetchedData[timePeriod];
+    const ctx = document.getElementById(chartId).getContext('2d');
+
+    // 🔥 Destroy old chart to avoid stale data
+    if (charts[chartId]) {
+        charts[chartId].destroy();
+    }
+
+    charts[chartId] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                data: data[metric],
+                borderColor: BLUE_LINE_COLOR,
+                backgroundColor: TRANSPARENT_BLUE_FILL,
+                fill: true
+            }]
+        },
+        options: miniLineChartOptions(metric)
+    });
+
+    const descEl = document.getElementById(`${metric}-description`);
+    if (descEl) {
+        descEl.innerText = `${metric.charAt(0).toUpperCase() + metric.slice(1)} Trend (${timePeriod})`;
+    }
+}
+
+
+    // --- Dashboard UI Updates ---
+    function initializeDoughnutChart() {
+        const totals = { views: fetchedData.totalViews.n, likes: fetchedData.totalLikes.n, comments: fetchedData.totalComments.n, readtime: getAvgReadTime(), bounce: getBounceRate(), posts: fetchedData.totalPosts.n };
+        const normalized = [totals.views, totals.likes*2, totals.comments*3, totals.readtime*4, Math.max(1, 100-totals.bounce), totals.posts*1.5];
+        const totalSum = normalized.reduce((a, b) => a + b, 0);
+        const finalValues = normalized.map(v => totalSum === 0 ? 0 : +(v / totalSum * 100).toFixed(1));
+
+        const ctx = document.getElementById('engagementDoughnutChart').getContext('2d');
+        if (charts['doughnut']) charts['doughnut'].destroy();
+        
+        charts['doughnut'] = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Views', 'Likes', 'Comments', 'Read Time', 'Bounce', 'Posts'],
+                datasets: [{ data: finalValues, backgroundColor: ['#0D47A1','#1565C0','#1E88E5','#42A5F5','#90CAF9','#E3F2FD'] }]
+            },
+            options: { responsive: true, cutout: '65%', plugins: { legend: { display: false } } }
+        });
+        generateCustomLegend(charts['doughnut']);
+    }
+
+    function generateCustomLegend(chart) {
+        const legendContainer = document.getElementById('chartLegend');
+        legendContainer.innerHTML = '';
+        chart.data.labels.forEach((label, i) => {
+            const div = document.createElement('div');
+            div.className = 'flex justify-between items-center text-gray-700 py-1';
+            div.innerHTML = `<div class="flex items-center space-x-2"><span class="w-3 h-3 rounded-full" style="background-color: ${chart.data.datasets[0].backgroundColor[i]};"></span><span>${label}</span></div><b>${chart.data.datasets[0].data[i]}%</b>`;
+            legendContainer.appendChild(div);
+        });
+    }
+
+    window.updateChart = (metric, period) => initializeChart(`${metric}LineChart`, metric, period);
+
+    function updateMetricTiles(data) {
+        const trend = data.monthly;
+        const lastIdx = trend.views.length - 1;
+        const prevIdx = lastIdx > 0 ? lastIdx - 1 : lastIdx;
+
+        const viewChange = calculateChange(trend.views[lastIdx], trend.views[prevIdx]);
+        document.getElementById('metric-views-value').textContent = fetchedData.totalViews.n.toLocaleString();
+        document.getElementById('metric-views-change').textContent = viewChange.value;
+        document.getElementById('metric-views-change').className = `ml-2 text-sm font-semibold ${viewChange.class}`;
+        
+        // Similar updates for likes and comments
+        document.getElementById('metric-likes-value').textContent = fetchedData.totalLikes.n.toLocaleString();
+        document.getElementById('metric-comments-value').textContent = fetchedData.totalComments.n.toLocaleString();
+        document.getElementById('metric-posts-value').textContent = fetchedData.totalPosts.n.toLocaleString();
+        document.getElementById('metric-readtime-value').textContent = getAvgReadTime().toFixed(2).replace('.',':');
+        document.getElementById('metric-bounce-value').textContent = getBounceRate() + '%';
+    }
+
+    function getLastNDates(n) {
+      const dates = [];
+    for (let i = n - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        dates.push(
+            d.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short'
+            })
+        );
+    }
+    return dates;
+}
+
+
+    async function fetchAndRenderDashboard() {
+        const token = localStorage.getItem('token');
+        if (!token) return console.error("No token found");
+        try {
+            const response = await fetch('http://localhost:5000/api/analytics/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const res = await response.json();
+            fetchedData = normalizeData(res.data);
+            
+            updateMetricTiles(fetchedData);
+            const metrics = ['views', 'posts', 'likes', 'comments', 'shares', 'bounce', 'readtime'];
+            metrics.forEach(m => updateChart(m, 'monthly'));
+            initializeDoughnutChart();
+        } catch (e) { console.error("Fetch Error:", e); }
+    }
+
+    
+    document.addEventListener('DOMContentLoaded', () => {
+    fetchAndRenderDashboard();
+
+    // 🔄 Auto-refresh analytics every 10 seconds
+    setInterval(fetchAndRenderDashboard, 10000);
+});
+
+</script>
+
+</body>
+</html>
