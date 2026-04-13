@@ -1,5 +1,4 @@
-Cosmo Blog
-Blog Management System using Generative AI
+Blog Management System using Generative AI - Cosmo Blog
 
 ---
 
