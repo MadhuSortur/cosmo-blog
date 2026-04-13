@@ -11,6 +11,93 @@ import { fileURLToPath } from "url";
 import multer from "multer";
 import dotenv from "dotenv";
 import axios from "axios";
+import FormData from "form-data";
+import { GoogleGenAI } from "@google/genai";
+import { InferenceClient } from "@huggingface/inference";
+import { classifyContent } from './content-filter/classify.js';
+
+
+dotenv.config();
+
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+const client = new InferenceClient(process.env.HF_TOKEN);
+
+const app = express();
+const PORT = 5000;
+const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Ensure uploads folder exists
+const UPLOADS_DIR = path.join(__dirname, "uploads");
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
+
+// Serve static folders
+app.use("/uploads", express.static(UPLOADS_DIR));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static('data'));
+
+console.log("📂 Serving uploads from:", UPLOADS_DIR);
+console.log("📂 Serving public from:", path.join(__dirname, "public"));
+
+// -------------------- MySQL --------------------
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+
+db.connect((err) => {
+  if (err) console.error("❌ MySQL connection error:", err);
+  else console.log("✅ Connected to MySQL");
+});
+
+const dbPromise = db.promise();
+
+// -------------------- Multer --------------------
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+});
+const upload = multer({ storage });
+
+// -------------------- Helpers --------------------
+function verifyToken(req, res, next) {
+  const auth = req.headers["authorization"];
+  if (!auth) return res.status(403).json({ error: "No token provided" });
+  const parts = auth.split(" ");
+  if (parts.length !== 2 || parts[0] !== "Bearer")
+    return res.status(401).json({ error: "Malformed token" });
+
+  const token = parts[1];
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(401).json({ error: "Invalid token" });
+    req.user = decoded;
+    next();
+  });
+}
+
+// Clean URLs for DB paths
+function toFullUrl(value) {
+  if (!value) return null;
+  if (value.startsWith("http")) return value;
+  const clean = value.replace(/^\/+/, ""); // remove leading slashes
+  return `http://localhost:${PORT}/${clean}`;
+}
+
+
+app.get("/video-generator", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "p.html"));
+});
 
 
 // -------------------- ROUTES --------------------
